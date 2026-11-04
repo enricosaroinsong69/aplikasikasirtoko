@@ -1,7 +1,7 @@
-/* Service worker aplikasi Gudang Toko Bangunan. VERSI berganti otomatis setiap kali aplikasi dirakit ulang. */
-const VERSI = 'gudang-e5201cb02e';
-const AWALAN = 'gudang-';
-const INTI = ["./", "index.html", "manifest.webmanifest", "demo.js", "ikon-180.png", "ikon-192.png", "ikon-512.png", "ikon-maskable-512.png", "fonts/barlow-condensed-latin-500-normal.woff2", "fonts/barlow-condensed-latin-600-normal.woff2", "fonts/barlow-condensed-latin-700-normal.woff2", "fonts/barlow-semi-condensed-latin-400-normal.woff2", "fonts/barlow-semi-condensed-latin-500-normal.woff2", "fonts/barlow-semi-condensed-latin-600-normal.woff2", "fonts/barlow-semi-condensed-latin-700-normal.woff2"];
+/* Service worker aplikasi Kasir Toko Bangunan. VERSI berganti otomatis setiap kali aplikasi dirakit ulang. */
+const VERSI = 'kasir-f13e598499';
+const AWALAN = 'kasir-';
+const INTI = ["./", "index.html", "manifest.webmanifest", "demo.js", "ikon-180.png", "ikon-192.png", "ikon-512.png", "ikon-maskable-512.png", "huruf.css"];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSI).then(c => c.addAll(INTI)).then(() => self.skipWaiting()));
@@ -29,7 +29,7 @@ self.addEventListener('fetch', e => {
   if (url.origin !== location.origin || !url.pathname.startsWith(lingkup)) return;
   // berkas di subfolder lain (mis. aplikasi Gudang di folder gudang/) diurus service worker-nya sendiri
   const rel = url.pathname.slice(lingkup.length);
-  if (rel.includes('/') && !rel.startsWith('fonts/')) return;
+  if (rel.includes('/')) return;
   if (req.mode === 'navigate' || /\.(html|webmanifest)$/.test(url.pathname) || url.pathname.endsWith('/')) { e.respondWith(jaringanDulu(req)); return; }
   e.respondWith(caches.open(VERSI).then(c => c.match(req).then(r => r || fetch(req).then(res => { if (res && res.ok) c.put(req, res.clone()); return res; }))));
 });
