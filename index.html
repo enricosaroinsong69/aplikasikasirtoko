@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="id" data-app="kasir">
+<html lang="id" data-app="gudang">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kasir Toko Bangunan</title>
-<meta name="description" content="Nota jual, pembayaran bon, dan stok toko bangunan. Tersambung ke aplikasi Gudang dan laporan di Google Spreadsheet.">
-<meta name="theme-color" content="#F2B300">
+<title>Gudang Toko Bangunan</title>
+<meta name="description" content="Pesanan dari kasir, barang masuk dari supplier, stok, dan hitung stok toko bangunan. Tersambung ke aplikasi Kasir dan laporan di Google Spreadsheet.">
+<meta name="theme-color" content="#24445E">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="ikon-192.png">
 <link rel="apple-touch-icon" href="ikon-180.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Kasir Toko">
+<meta name="apple-mobile-web-app-title" content="Gudang Toko">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 @font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-condensed-latin-500-normal.woff2) format("woff2")}
@@ -447,7 +447,7 @@ body.ada-lapis #toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 <body>
 <header class="bar">
   <div class="bar-in">
-    <button class="brand" data-act="ke" data-v="beranda"><span class="brand-nama" id="namaToko">Toko Bangunan</span><span class="brand-sub" id="subToko">Kasir</span></button>
+    <button class="brand" data-act="ke" data-v="pesanan"><span class="brand-nama" id="namaToko">Toko Bangunan</span><span class="brand-sub" id="subToko">Gudang</span></button>
     <button class="status" id="status" data-act="status" aria-label="Status sambungan"></button>
     <button class="ikon-btn" data-act="pengaturan" aria-label="Pengaturan"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button>
   </div>
@@ -455,11 +455,11 @@ body.ada-lapis #toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 <main id="main"></main>
 <nav class="nav" aria-label="Menu utama">
   <div class="nav-in">
-    <button data-act="ke" data-v="beranda"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg>Beranda</button>
-    <button data-act="ke" data-v="nota"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4L6 21z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>Nota</button>
-    <button class="fab" data-act="nota-baru" aria-label="Nota jual baru"><span class="lingkar"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>Nota baru</button>
+    <button data-act="ke" data-v="pesanan"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>Pesanan</button>
     <button data-act="ke" data-v="stok"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/></svg>Stok</button>
-    <button data-act="ke" data-v="bon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a1 1 0 0 1-1-1z"/><path d="M4 7l11-3 1 3"/><circle cx="16" cy="13.5" r="1.2"/></svg>Bon</button>
+    <button class="fab" data-act="masuk-baru" aria-label="Catat barang masuk"><span class="lingkar"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>Barang masuk</button>
+    <button data-act="ke" data-v="riwayat"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Riwayat</button>
+    <button data-act="ke" data-v="hitung"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg>Hitung</button>
   </div>
 </nav>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -938,386 +938,334 @@ async function mulaiInti(awal) {
 }
 
 'use strict';
-/* ===== Aplikasi KASIR ===== */
-const U = { nota: { per: 'hari', q: '' }, bon: {}, stok: { q: '', kat: '' } };
-let D = null;                       // nota yang sedang diisi
+/* ===== Aplikasi GUDANG ===== */
+const U = { ps: { f: 'semua' }, stok: { q: '', kat: '' }, hit: { q: '', kat: '' }, riw: {} };
+let M = null;                       // penerimaan barang yang sedang diisi
+const KATEGORI = ['Semen & Pasir', 'Besi & Baja', 'Kayu & Triplek', 'Cat & Pelapis', 'Pipa & Sanitasi', 'Listrik', 'Atap & Plafon', 'Keramik & Lantai', 'Paku, Baut & Kawat', 'Alat Kerja', 'Lainnya'];
+const SATUAN = ['sak', 'batang', 'lembar', 'buah', 'kg', 'm', 'm²', 'm³', 'ret', 'dus', 'pcs', 'set', 'roll', 'kaleng', 'pail', 'galon', 'liter'];
 
-/* ---------- nota yang dikenal HP ini ---------- */
-function notaTertunda() { return Object.values(kenal()).filter(n => !n.terkirim); }
-function rapikanKenal() {
-  const k = kenal(), batas = tambahHari(hariIni(), -60), simpanId = new Set([...(CACHE.piutangIds || [])]);
-  for (const id of Object.keys(k)) { const n = k[id]; if (n.terkirim && n.tgl < batas && !simpanId.has(id)) delete k[id]; }
-}
-function perbaruiSeq(list) {
-  const ymd = hariIni().slice(2).replace(/-/g, ''); const pre = (DATA.toko.pj || 'NJ') + '-' + ymd + '-' + CFG.huruf; let max = +(LS.get('seq_' + ymd) || 0);
-  for (const n of list || []) if (String(n.no).startsWith(pre)) { const k = parseInt(String(n.no).slice(pre.length), 10); if (k > max) max = k; }
-  LS.set('seq_' + ymd, max);
-}
-function noBerikut(tgl) {
-  const ymd = tgl.slice(2).replace(/-/g, ''); const pre = (DATA.toko.pj || 'NJ') + '-' + ymd + '-' + CFG.huruf; let max = +(LS.get('seq_' + ymd) || 0);
-  for (const n of Object.values(kenal())) if (String(n.no).startsWith(pre)) { const k = parseInt(String(n.no).slice(pre.length), 10); if (k > max) max = k; }
-  return { no: pre + String(max + 1).padStart(3, '0'), ymd, seq: max + 1 };
-}
-function stokTampil(b) { let q = b.stok; for (const o of ANTRE) if (o.tipe === 'nota') for (const i of o.data.items) if (i.bid === b.id) q -= +i.qty || 0; return bulat(q); }
+window.SETELAH_TERKIRIM = function (op) { };
+window.SETELAH_SINKRON = function () { if (!STATUS.err && !TUMPUK.length && VIEWS[V] && VIEWS[V].masuk) VIEWS[V].masuk(true); else render(); segarkanAtas(); };
+window.MULAI_APP = async function () { setInterval(() => { if (document.visibilityState === 'visible' && tersambung()) ambilPesanan(true); }, 20000); };
 
-window.SETELAH_TERKIRIM = function (op) { if (op.tipe === 'nota') { const n = kenal()[op.data.id]; if (n) n.terkirim = true; } };
-window.SETELAH_SINKRON = function () { if (!STATUS.err && VIEWS[V] && VIEWS[V].masuk && !TUMPUK.length) VIEWS[V].masuk(true); else render(); segarkanAtas(); };
-window.MULAI_APP = async function () { if (!LS.get('draft')) D = null; };
-
-/* ---------- tampilan bersama ---------- */
-function pilStatus(n) {
-  if (n.batal) return '<span class="pil pil-batal">Batal</span>';
-  const s = n.sisa > 0 ? `<span class="pil pil-${n.jt && n.jt < hariIni() ? 'telat' : 'bon'}">Sisa ${rp(n.sisa)}</span>` : '<span class="pil pil-lunas">Lunas</span>';
-  return s;
+/* ---------- PESANAN dari kasir ---------- */
+function daftarPesanan() {
+  const P = CACHE.pesanan || { aktif: [], selesai: [] };
+  const aktif = [], selesai = [];
+  for (const id of P.aktif) { const n = cariNota(id); if (!n || n.batal) continue; (n.status === 'Selesai' ? selesai : aktif).push(n); }
+  for (const id of P.selesai) { const n = cariNota(id); if (n && !n.batal && !selesai.some(x => x.id === n.id)) selesai.push(n); }
+  return { aktif, selesai };
 }
-function barisNota(n0) {
-  const n = tampilNota(n0);
-  return `<button class="item${n.batal ? ' coret' : ''}" data-act="buka-nota" data-id="${n.id}"><div class="utama"><div class="j">${esc(n.nama || 'Pembeli umum')}</div><div class="s"><span class="no-kecil">${esc(n.no)}</span> · ${n.items.length} barang${n.jam ? ' · ' + esc(n.jam) : ''}${n.belumTerkirim ? ' · belum terkirim' : ''}</div></div><div class="kanan"><div class="nilai">${rp(n.total)}</div><div class="deret" style="gap:4px;justify-content:flex-end">${pilGudang(n)}${pilStatus(n)}</div></div></button>`;
+function waktuLalu(ms) { if (!ms) return ''; const m = Math.round((Date.now() - ms) / 60000); if (m < 1) return 'baru saja'; if (m < 60) return m + ' menit lalu'; const j = Math.floor(m / 60); if (j < 24) return j + ' jam lalu'; return Math.floor(j / 24) + ' hari lalu'; }
+function centang() { return CACHE.centang || (CACHE.centang = {}); }
+function kartuPesanan(n) {
+  const c = centang()[n.id] || {}; const cls = n.status === 'Disiapkan' ? ' disiapkan' : n.status === 'Selesai' ? ' selesai' : '';
+  const kirim = n.ambil === 'Diantar';
+  return `<section class="kartu pesanan${cls}" id="ps-${n.id}">
+    <div class="ps-head"><div class="utama"><div class="ps-nama">${esc(n.nama || 'Pembeli umum')}</div><div class="s"><span class="no-kecil">${esc(n.no)}</span> · ${esc(n.jam || '')} · ${waktuLalu(n.dibuat)}${n.kasir ? ' · kasir ' + esc(n.kasir) : ''}</div></div>${pilGudang(n)}</div>
+    <div class="ps-info"><span>${kirim ? ikon('truk') : ''} <b>${esc(n.ambil || 'Ambil di gudang')}</b>${kirim && n.alamat ? ' ke ' + esc(n.alamat) : ''}</span>${n.hp ? `<span>HP ${esc(n.hp)}</span>` : ''}${n.tgl !== hariIni() ? `<span>Nota ${tglPendek(n.tgl)}</span>` : ''}${n.statusTertunda ? '<span>status belum terkirim</span>' : ''}</div>
+    ${n.ket ? `<div class="ps-catatan"><b>Catatan:</b> ${esc(n.ket)}</div>` : ''}
+    <ul class="ps-barang">${n.items.map((i, k) => `<li class="${c[k] ? 'ok' : ''}" data-act="ps-cek" data-id="${n.id}" data-k="${k}"><span class="kotak-cek"></span><span class="nm">${esc(i.nama)}</span><span class="ps-qty">${angka(i.qty)}<small>${esc(i.sat || '')}</small></span></li>`).join('')}</ul>
+    <div class="ps-aksi">${n.status === 'Selesai' ? `<button class="btn btn-kecil" data-act="ps-cetak" data-id="${n.id}">${ikon('cetak')} Surat jalan</button>` :
+      `<button class="btn" data-act="ps-cetak" data-id="${n.id}">${ikon('cetak')} Surat jalan</button>${n.status === 'Menunggu' ? `<button class="btn" data-act="ps-status" data-id="${n.id}" data-s="Disiapkan">Mulai siapkan</button>` : ''}<button class="btn btn-utama" data-act="ps-selesai" data-id="${n.id}">${ikon('ceklis')} ${kirim ? 'Sudah diantar' : 'Sudah diserahkan'}</button>`}</div>
+  </section>`;
 }
-
-/* ---------- BERANDA ---------- */
-VIEWS.beranda = {
+VIEWS.pesanan = {
   html() {
     if (!tersambung()) return kartuSambung();
-    const t = hariIni(); const R = CACHE.ringkas && CACHE.ringkas.tgl === t ? CACHE.ringkas.r : null;
-    const tunda = notaTertunda().filter(n => n.tgl === t);
-    const jual = (R ? R.penjualan : 0) + tunda.reduce((s, n) => s + n.total, 0);
-    const jml = (R ? R.nota : 0) + tunda.length;
-    const draf = LS.get('draft');
-    const hari = (CACHE.hariIni && CACHE.hariIni.tgl === t ? CACHE.hariIni.ids : []).map(id => kenal()[id]).filter(Boolean);
-    const semua = [...tunda, ...hari.filter(n => !tunda.some(x => x.id === n.id))].sort((a, b) => (b.dibuat || 0) - (a.dibuat || 0));
-    const aktif = (CACHE.aktifGudang || []).map(id => kenal()[id]).filter(n => n && !semua.some(x => x.id === n.id));
-    const gudang = [...semua, ...aktif].map(tampilNota).filter(n => !n.batal && n.status !== 'Selesai').sort((a, b) => (a.dibuat || 0) - (b.dibuat || 0));
-    let h = '';
-    if (draf && draf.items && draf.items.length) h += `<button class="kartu kartu-p draf" data-act="lanjut-draf"><div><b>Nota belum disimpan</b><div class="kecil">${draf.items.length} barang · ${rp(totalNota(draf))}${draf.nama ? ' · ' + esc(draf.nama) : ''}</div></div><span class="btn btn-kecil btn-gelap">Lanjutkan</span></button>`;
-    h += `<section class="kartu ringkas"><div><div class="muted kecil">Penjualan hari ini</div><div class="angka-besar">${rp(jual)}</div></div><div class="statistik"><div><b>${jml}</b><span>nota</span></div><div><b>${R ? singkat(R.totalMasuk) : '–'}</b><span>uang masuk</span></div><div><b>${R ? singkat(R.piutang) : '–'}</b><span>bon belum dibayar</span></div></div></section>`;
-    h += `<div class="aksi-besar"><button class="btn btn-utama" data-act="nota-baru">Nota jual<small>Pembeli di toko atau pesan antar</small></button><button class="btn" data-act="ke" data-v="bon">Terima bon<small>Pelunasan dari pelanggan</small></button></div>`;
-    if (ANTRE.length) h += `<div class="banner banner-kuning"><span class="kecil"><b>${ANTRE.length} data belum terkirim.</b> Tersimpan aman di HP ini dan dikirim otomatis saat internet tersedia.</span><button class="btn btn-kecil btn-gelap" data-act="status">Rincian</button></div>`;
-    if (gudang.length) h += `<section class="kolom"><div class="bag-head"><h2 class="bag">Belum diambil di gudang</h2></div><div class="daftar">${gudang.slice(0, 8).map(barisNota).join('')}</div>${gudang.length > 8 ? `<p class="muted kecil">dan ${gudang.length - 8} nota lainnya</p>` : ''}</section>`;
-    h += `<section class="kolom"><div class="bag-head"><h2 class="bag">Nota hari ini</h2><button class="link" data-act="ke" data-v="nota">Semua nota</button></div>${semua.length ? `<div class="daftar">${semua.slice(0, 10).map(barisNota).join('')}</div>` : `<div class="kartu kosong"><b>Belum ada nota hari ini</b><span>Tekan tombol + untuk membuat nota jual.</span></div>`}</section>`;
-    return h;
+    const { aktif, selesai } = daftarPesanan();
+    const hit = s => aktif.filter(n => s === 'semua' || (s === 'Diantar' ? n.ambil === 'Diantar' : n.status === s)).length;
+    const ch = (v, l) => `<button class="chip${U.ps.f === v ? ' aktif' : ''}" data-act="ps-f" data-v="${v}">${l} (${hit(v)})</button>`;
+    const L = aktif.filter(n => U.ps.f === 'semua' || (U.ps.f === 'Diantar' ? n.ambil === 'Diantar' : n.status === U.ps.f));
+    return `<div class="bag-head"><h2 class="bag">Pesanan dari kasir</h2><button class="ikon-btn kotak" data-act="ps-segar" aria-label="Muat ulang">${ikon('segar')}</button></div>
+    <div class="chips">${ch('semua', 'Semua')}${ch('Menunggu', 'Menunggu')}${ch('Disiapkan', 'Disiapkan')}${ch('Diantar', 'Diantar')}</div>
+    ${CACHE.pesanan ? '' : '<p class="muted kecil">Memuat pesanan…</p>'}
+    ${L.length ? L.map(kartuPesanan).join('') : `<div class="kartu kosong"><b>Tidak ada pesanan menunggu</b><span>Nota dari kasir muncul di sini otomatis. Halaman ini diperbarui tiap 20 detik.</span></div>`}
+    ${selesai.length ? `<details class="kartu kartu-p"><summary class="link" style="cursor:pointer">Selesai hari ini (${selesai.length})</summary><div class="kolom" style="margin-top:12px">${selesai.map(kartuPesanan).join('')}</div></details>` : ''}`;
   },
-  async masuk(diam) {
-    if (!tersambung()) return; const t = hariIni();
-    try { const [a, b, c] = await Promise.all([api('ringkas', { dari: t, sampai: t }), api('nota', { dari: t, sampai: t }), api('pesanan')]); CACHE.ringkas = { tgl: t, r: a.ringkas }; perbaruiKenal(b.nota); perbaruiKenal(c.aktif); CACHE.aktifGudang = c.aktif.map(n => n.id); CACHE.hariIni = { tgl: t, ids: b.nota.map(n => n.id) }; perbaruiSeq(b.nota); simpan(); }
-    catch (e) { if (!diam) STATUS.err = e.message; }
-    if (V === 'beranda') render();
-  }
+  masuk(diam) { ambilPesanan(diam); }
 };
-
-/* ---------- NOTA ---------- */
-function rentang(p) { const t = hariIni(); if (p === 'hari') return [t, t]; if (p === '7') return [tambahHari(t, -6), t]; if (p === 'bulan') return [t.slice(0, 8) + '01', t]; return ['2000-01-01', t]; }
-VIEWS.nota = {
-  html() {
-    const u = U.nota; const ch = (v, l) => `<button class="chip${u.per === v ? ' aktif' : ''}" data-act="nl-per" data-v="${v}">${l}</button>`;
-    return `<div class="bag-head"><h2 class="bag">Nota</h2><button class="btn btn-kecil btn-utama" data-act="nota-baru">${ikon('plus')} Nota jual</button></div>
-    <div class="cari">${ikon('cari')}<input id="nl-q" class="in" type="search" placeholder="Cari no. nota, pelanggan, atau HP" value="${esc(u.q)}" autocomplete="off"></div>
-    <div class="chips">${ch('hari', 'Hari ini')}${ch('7', '7 hari')}${ch('bulan', 'Bulan ini')}${ch('semua', 'Semua')}</div>
-    <div id="nl-isi" class="kolom"></div>`;
-  },
-  lalu() { isiDaftarNota(); },
-  async masuk() {
-    const [a, b] = rentang(U.nota.per); const kunci = a + '|' + b + '|' + U.nota.q.trim().toLowerCase(); U.nota.memuat = true; isiDaftarNota();
-    try { const r = await api('nota', { dari: a, sampai: b, q: U.nota.q.trim(), batas: 300 }); perbaruiKenal(r.nota); CACHE.daftar = { kunci, ids: r.nota.map(n => n.id) }; U.nota.err = ''; simpan(); }
-    catch (e) { U.nota.err = e.message; }
-    U.nota.memuat = false; if (V === 'nota') isiDaftarNota();
-  }
-};
-function isiDaftarNota() {
-  const box = $('#nl-isi'); if (!box) return; const u = U.nota; const [a, b] = rentang(u.per); const kunci = a + '|' + b + '|' + u.q.trim().toLowerCase();
-  const cocok = n => n.tgl >= a && n.tgl <= b && (!u.q.trim() || cariTeks(u.q, n.no + ' ' + n.nama + ' ' + n.hp));
-  let L;
-  if (CACHE.daftar && CACHE.daftar.kunci === kunci) { const ids = new Set(CACHE.daftar.ids); L = Object.values(kenal()).filter(n => ids.has(n.id) || (!n.terkirim && cocok(n))); }
-  else L = Object.values(kenal()).filter(cocok);
-  L.sort((x, y) => x.tgl < y.tgl ? 1 : x.tgl > y.tgl ? -1 : (y.dibuat || 0) - (x.dibuat || 0));
-  let h = u.memuat ? '<p class="muted kecil">Memuat dari spreadsheet…</p>' : u.err ? `<p class="muted kecil">Menampilkan data tersimpan di HP. ${esc(u.err)}</p>` : '';
-  if (!L.length) { box.innerHTML = h + `<div class="kosong"><b>Tidak ada nota</b><span>Ubah pencarian atau rentang tanggal.</span></div>`; return; }
-  const grup = {}, urut = []; for (const n of L) { if (!grup[n.tgl]) { grup[n.tgl] = []; urut.push(n.tgl); } grup[n.tgl].push(n); }
-  box.innerHTML = h + urut.map(t => `<div><div class="grup-tgl"><span>${tglHari(t)}</span><span class="num">${rp(grup[t].filter(n => !tampilNota(n).batal).reduce((s, n) => s + n.total, 0))}</span></div><div class="daftar">${grup[t].map(barisNota).join('')}</div></div>`).join('');
+let ambilJalan = false;
+async function ambilPesanan(diam) {
+  if (!tersambung() || ambilJalan) return; ambilJalan = true;
+  try {
+    const r = await api('pesanan');
+    perbaruiKenal(r.aktif); perbaruiKenal(r.selesai);
+    const lihat = new Set(CACHE.lihat || []); const baru = r.aktif.filter(n => !lihat.has(n.id));
+    if (CACHE.pesanan && baru.length) { bunyi(); if (navigator.vibrate) navigator.vibrate([120, 80, 120]); toast(baru.length + ' pesanan baru dari kasir'); }
+    r.aktif.forEach(n => lihat.add(n.id)); CACHE.lihat = [...lihat].slice(-500);
+    CACHE.pesanan = { aktif: r.aktif.map(n => n.id), selesai: r.selesai.map(n => n.id), waktu: Date.now() };
+    const c = centang(); const aktifId = new Set(CACHE.pesanan.aktif); for (const id of Object.keys(c)) if (!aktifId.has(id)) delete c[id];
+    simpan();
+  } catch (e) { if (!diam) toast('Pesanan belum bisa dimuat: ' + e.message); }
+  ambilJalan = false; perbaruiLencana(); if (V === 'pesanan' && !document.activeElement.closest('#main input')) render();
 }
-let tCari = 0;
-PADA_INPUT['nl-q'] = t => { U.nota.q = t.value; isiDaftarNota(); clearTimeout(tCari); tCari = setTimeout(() => VIEWS.nota.masuk(), 500); };
-
-/* ---------- BON ---------- */
-VIEWS.bon = {
-  html() {
-    const ids = new Set(CACHE.piutangIds || []);
-    const L = Object.values(kenal()).filter(n => ids.has(n.id) || !n.terkirim).map(tampilNota).filter(n => !n.batal && n.sisa > 0);
-    const g = {}; for (const n of L) { const k = (n.nama || 'Tanpa nama').trim().toLowerCase(); (g[k] = g[k] || { nama: n.nama || 'Tanpa nama', hp: n.hp, nota: [], total: 0, telat: 0 }); g[k].nota.push(n); g[k].total += n.sisa; if (n.hp) g[k].hp = n.hp; if (n.jt && n.jt < hariIni()) g[k].telat++; }
-    const gs = Object.entries(g).map(([k, v]) => Object.assign(v, { key: k })).sort((a, b) => b.telat - a.telat || b.total - a.total);
-    gs.forEach(x => x.nota.sort((a, b) => a.tgl < b.tgl ? -1 : 1));
-    const tot = gs.reduce((s, x) => s + x.total, 0);
-    return `<h2 class="bag">Bon pelanggan</h2>
-    <section class="kartu ringkas"><div class="muted kecil">Bon yang belum dibayar</div><div class="angka-besar">${rp(tot)}</div><div class="muted kecil">${gs.length} pelanggan · ${L.length} nota${U.bon.memuat ? ' · memuat…' : U.bon.err ? ' · data tersimpan di HP' : ''}</div></section>
-    ${gs.length ? gs.map(x => `<section class="kartu grup-bon"><div class="gb-head"><div class="utama"><div class="j">${esc(x.nama)}</div><div class="s">${x.nota.length} nota${x.hp ? ' · ' + esc(x.hp) : ''}</div></div><div class="kanan"><div class="nilai">${rp(x.total)}</div>${x.telat ? `<span class="pil pil-telat">${x.telat} lewat tempo</span>` : ''}</div></div>
-      <div class="gb-nota">${x.nota.map(n => `<button class="gb-baris" data-act="buka-nota" data-id="${n.id}"><span><span class="no-kecil">${esc(n.no)}</span> · ${tglPendek(n.tgl)}${n.jt ? ' · tempo ' + tglPendek(n.jt) : ''}</span><b class="num${n.jt && n.jt < hariIni() ? ' merah' : ''}">${rp(n.sisa)}</b></button>`).join('')}</div>
-      <div class="gb-aksi"><button class="btn btn-kecil btn-utama" data-act="bayar-grup" data-k="${esc(x.key)}">Terima pembayaran</button><button class="btn btn-kecil" data-act="tagih" data-k="${esc(x.key)}">${ikon('wa')} Tagih lewat WA</button></div></section>`).join('') : `<div class="kartu kosong"><b>Tidak ada bon</b><span>Nota dengan pembayaran “Bon” muncul di sini sampai lunas.</span></div>`}`;
-  },
-  async masuk() {
-    U.bon.memuat = true; if (V === 'bon') render();
-    try { const r = await api('piutang'); perbaruiKenal(r.nota); CACHE.piutangIds = r.nota.map(n => n.id); U.bon.err = ''; simpan(); } catch (e) { U.bon.err = e.message; }
-    U.bon.memuat = false; if (V === 'bon') render();
-  }
-};
-function grupBon(key) { const ids = new Set(CACHE.piutangIds || []); return Object.values(kenal()).filter(n => ids.has(n.id) || !n.terkirim).map(tampilNota).filter(n => !n.batal && n.sisa > 0 && (n.nama || 'Tanpa nama').trim().toLowerCase() === key).sort((a, b) => a.tgl < b.tgl ? -1 : 1); }
-function sheetBayar(daftar, judul) {
-  const total = daftar.reduce((a, n) => a + n.sisa, 0); if (!total) { toast('Tidak ada sisa yang perlu dibayar.'); return; } let metode = 'Tunai';
-  const r = bukaSheet(`<div class="sh-head"><h3>${esc(judul)}</h3><p class="muted kecil">Sisa ${rp(total)}${daftar.length > 1 ? ` dari ${daftar.length} nota. Pembayaran menutup nota paling lama lebih dulu.` : ''}</p></div>
-  <div class="sh-body"><label class="fld"><span>Jumlah dibayar</span><input id="by-jml" class="in uang besar" inputmode="numeric" value="${ribu(total)}"></label>
-    <div class="chips" id="by-met">${['Tunai', 'Transfer', 'QRIS'].map(m => `<button type="button" class="chip${m === metode ? ' aktif' : ''}" data-m="${m}">${m}</button>`).join('')}</div>
-    <div class="grid2"><label class="fld"><span>Tanggal</span><input id="by-tgl" type="date" value="${hariIni()}"></label><label class="fld"><span>Catatan</span><input id="by-ket" placeholder="Opsional"></label></div></div>
-  <div class="sh-foot"><button class="btn" data-act="kembali">Batal</button><button class="btn btn-utama" id="by-ok">Simpan pembayaran</button></div>`);
-  $$('#by-met .chip', r.el).forEach(b => b.onclick = () => { metode = b.dataset.m; $$('#by-met .chip', r.el).forEach(x => x.classList.toggle('aktif', x === b)); });
-  $('#by-ok', r.el).onclick = async () => {
-    let jml = parseRp($('#by-jml', r.el).value); if (jml <= 0) { toast('Isi jumlah yang dibayar.'); return; } const lebih = jml - total; if (jml > total) jml = total;
-    const tgl = $('#by-tgl', r.el).value || hariIni(), ket = $('#by-ket', r.el).value.trim();
-    for (const n of daftar) { if (jml <= 0) break; const a = Math.min(n.sisa, jml); if (a <= 0) continue; const id = uid(); antre('bayar', { id, notaId: n.id, tgl, jumlah: a, metode, ket, kasir: CFG.nama }, id); jml -= a; }
-    await kembali(); toast(lebih > 0 ? `Tersimpan. Kelebihan ${rp(lebih)} tidak dicatat.` : 'Pembayaran tersimpan'); render(); sinkron();
-  };
+function perbaruiLencana() {
+  const n = daftarPesanan().aktif.length; const b = $('.nav button[data-v="pesanan"]'); if (!b) return;
+  let l = $('.lencana', b); if (!n) { if (l) l.remove(); document.title = 'Gudang Toko Bangunan'; return; }
+  if (!l) { l = document.createElement('span'); l.className = 'lencana'; b.appendChild(l); } l.textContent = n > 99 ? '99+' : n; document.title = '(' + n + ') Gudang Toko Bangunan';
 }
+let audioCtx = null;
+function bunyi() { try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); const t = audioCtx.currentTime; [880, 1175].forEach((f, i) => { const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.frequency.value = f; o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(.0001, t + i * .18); g.gain.exponentialRampToValueAtTime(.25, t + i * .18 + .02); g.gain.exponentialRampToValueAtTime(.0001, t + i * .18 + .16); o.start(t + i * .18); o.stop(t + i * .18 + .17); }); } catch (e) { } }
+function ubahStatus(n, status) { antre('status', { notaId: n.id, status, petugas: CFG.nama }, n.id + '-' + status); render(); perbaruiLencana(); sinkron(); }
 
-/* ---------- STOK (lihat saja) ---------- */
+/* ---------- STOK ---------- */
+const fisik = b => bulat((b.stok || 0) + (b.belum || 0));
+const menipis = b => b.status !== 'Arsip' && (+b.min || 0) > 0 && b.stok <= b.min;
 VIEWS.stok = {
   html() {
-    if (!DATA.barang.length) return `<h2 class="bag">Stok barang</h2><div class="kartu kosong"><b>${tersambung() ? 'Belum ada barang' : 'Belum tersambung'}</b><span>${tersambung() ? 'Daftar barang diisi lewat aplikasi Gudang atau langsung di tab Barang pada spreadsheet.' : 'Sambungkan aplikasi di Pengaturan.'}</span></div>`;
-    const aktif = DATA.barang.filter(b => b.status !== 'Arsip'); const kats = [...new Set(aktif.map(b => b.kat || 'Lainnya'))].sort((a, b) => a.localeCompare(b, 'id'));
+    if (!tersambung()) return kartuSambung();
+    const aktif = DATA.barang.filter(b => b.status !== 'Arsip'); const tipis = aktif.filter(menipis).length;
+    const kats = [...new Set(aktif.map(b => b.kat || 'Lainnya'))].sort((a, b) => a.localeCompare(b, 'id'));
     const ch = (v, l) => `<button class="chip${U.stok.kat === v ? ' aktif' : ''}" data-act="st-kat" data-v="${esc(v)}">${esc(l)}</button>`;
-    return `<div class="bag-head"><h2 class="bag">Stok & harga</h2><span class="muted kecil">${aktif.length} barang</span></div>
+    return `<div class="bag-head"><h2 class="bag">Stok barang</h2><button class="btn btn-kecil btn-utama" data-act="barang-baru">${ikon('plus')} Barang</button></div>
+    <p class="muted kecil">${aktif.length} barang${tipis ? ` · <span class="merah">${tipis} menipis</span>` : ''}. “Fisik” = stok yang bisa dijual + barang terjual yang belum diambil.</p>
     <div class="cari">${ikon('cari')}<input id="st-q" class="in" type="search" placeholder="Cari nama, kode, atau kategori" value="${esc(U.stok.q)}" autocomplete="off"></div>
-    <div class="chips">${ch('', 'Semua')}${kats.map(k => ch(k, k)).join('')}</div><div id="st-isi"></div>`;
+    <div class="chips">${ch('', 'Semua')}${tipis ? ch('~tipis', 'Menipis') : ''}${kats.map(k => ch(k, k)).join('')}${DATA.barang.some(b => b.status === 'Arsip') ? ch('~arsip', 'Arsip') : ''}</div><div id="st-isi"></div>`;
   },
   lalu() { isiStok(); }
 };
 function isiStok() {
-  const box = $('#st-isi'); if (!box) return;
-  const L = DATA.barang.filter(b => b.status !== 'Arsip' && (!U.stok.kat || (b.kat || 'Lainnya') === U.stok.kat) && cariTeks(U.stok.q, b.nama + ' ' + b.kode + ' ' + b.kat)).sort((a, b) => a.nama.localeCompare(b.nama, 'id'));
-  box.innerHTML = L.length ? `<div class="daftar">${L.slice(0, 300).map(b => { const st = stokTampil(b); return `<button class="item" data-act="lihat-barang" data-id="${b.id}"><div class="utama"><div class="j">${esc(b.nama)}</div><div class="s">${esc([b.kode, b.kat].filter(Boolean).join(' · '))}</div></div><div class="kanan"><div class="nilai">${rp(b.hj)}</div><div class="s${st <= 0 ? ' merah' : ''}">stok ${angka(st)} ${esc(b.sat)}</div></div></button>`; }).join('')}</div>` : '<div class="kosong"><b>Barang tidak ditemukan</b></div>';
+  const box = $('#st-isi'); if (!box) return; const u = U.stok;
+  let L = DATA.barang.filter(b => u.kat === '~arsip' ? b.status === 'Arsip' : b.status !== 'Arsip');
+  if (u.kat === '~tipis') L = L.filter(menipis); else if (u.kat && u.kat[0] !== '~') L = L.filter(b => (b.kat || 'Lainnya') === u.kat);
+  L = L.filter(b => cariTeks(u.q, b.nama + ' ' + b.kode + ' ' + b.kat)).sort((a, b) => u.kat === '~tipis' ? a.stok - b.stok : a.nama.localeCompare(b.nama, 'id'));
+  if (!DATA.barang.length) { box.innerHTML = `<div class="kartu kosong"><b>Belum ada barang</b><span>Tambah barang di sini, atau isi langsung tab Barang di spreadsheet.</span><button class="btn btn-utama" data-act="barang-baru">${ikon('plus')} Tambah barang</button></div>`; return; }
+  box.innerHTML = L.length ? `<div class="daftar">${L.slice(0, 300).map(b => `<button class="item" data-act="buka-barang" data-id="${b.id}"><div class="utama"><div class="j">${esc(b.nama)}</div><div class="s">${esc([b.kode, b.kat].filter(Boolean).join(' · '))}${b.belum ? ' · ' + angka(b.belum) + ' belum diambil' : ''}</div></div><div class="kanan"><div class="nilai${menipis(b) || b.stok < 0 ? ' merah' : ''}">${angka(b.stok)}</div><div class="s">${esc(b.sat)}${b.belum ? ' · fisik ' + angka(fisik(b)) : ''}</div></div></button>`).join('')}</div>` : `<div class="kosong"><b>Barang tidak ditemukan</b><button class="btn btn-utama" data-act="barang-baru" data-nama="${esc(u.q)}">${ikon('plus')} Tambah “${esc(u.q || 'barang baru')}”</button></div>`;
 }
 PADA_INPUT['st-q'] = t => { U.stok.q = t.value; isiStok(); };
+function bukaBarang(id, opt) {
+  opt = opt || {}; const b = id ? BMAP[id] : null;
+  const kats = [...new Set(KATEGORI.concat(DATA.barang.map(x => x.kat).filter(Boolean)))], sats = [...new Set(SATUAN.concat(DATA.barang.map(x => x.sat).filter(Boolean)))];
+  const r = bukaSheet(`<div class="sh-head"><h3>${b ? 'Ubah barang' : 'Barang baru'}</h3>${b ? `<p class="muted kecil">Stok ${angka(b.stok)} ${esc(b.sat)} · fisik ${angka(fisik(b))}</p>` : ''}</div><div class="sh-body">
+    <label class="fld"><span>Nama barang</span><input id="bg-nama" value="${esc(b ? b.nama : (opt.nama || ''))}" placeholder="Mis. Semen PCC 50 kg"></label>
+    <div class="grid2"><label class="fld"><span>Kode / barcode</span><input id="bg-kode" value="${esc(b ? b.kode : (opt.kode || ''))}" placeholder="Opsional"></label><label class="fld"><span>Kategori</span><input id="bg-kat" list="dl-kat" value="${esc(b ? b.kat : '')}" placeholder="Pilih atau ketik"></label></div>
+    <div class="grid2"><label class="fld"><span>Satuan</span><input id="bg-sat" list="dl-sat" value="${esc(b ? b.sat : '')}" placeholder="sak, batang, kg…"></label><label class="fld"><span>Stok minimum</span><input id="bg-min" inputmode="decimal" value="${b && b.min ? angka(b.min) : ''}" placeholder="Peringatan bila di bawah ini"></label></div>
+    <div class="grid2"><label class="fld"><span>Harga beli</span><input id="bg-hb" class="uang" inputmode="numeric" value="${b && b.hb ? ribu(b.hb) : ''}" placeholder="0"></label><label class="fld"><span>Harga jual</span><input id="bg-hj" class="uang" inputmode="numeric" value="${b && b.hj ? ribu(b.hj) : ''}" placeholder="0"></label></div>
+    <p class="muted kecil" id="bg-margin"></p>
+    ${b ? `<label class="cek"><input type="checkbox" id="bg-arsip"${b.status === 'Arsip' ? ' checked' : ''}><span>Arsipkan (tidak muncul di pencarian kasir)</span></label><p class="muted kecil">Stok diubah lewat Barang masuk atau Hitung stok, supaya tercatat di kartu stok.</p>` : `<label class="fld"><span>Stok awal</span><input id="bg-awal" inputmode="decimal" placeholder="0"></label>`}
+    <datalist id="dl-kat">${kats.map(k => `<option value="${esc(k)}">`).join('')}</datalist><datalist id="dl-sat">${sats.map(k => `<option value="${esc(k)}">`).join('')}</datalist>
+  </div><div class="sh-foot"><button class="btn" data-act="kembali">Batal</button>${b ? `<button class="btn" id="bg-kartu">${ikon('daftar')} Kartu stok</button>` : ''}<button class="btn btn-utama" id="bg-ok">Simpan</button></div>`);
+  const el = r.el; const mg = () => { const hb = parseRp($('#bg-hb', el).value), hj = parseRp($('#bg-hj', el).value); setText('#bg-margin', hb > 0 && hj > 0 ? `Untung ${rp(hj - hb)} per satuan (${String(Math.round((hj - hb) / hb * 1000) / 10).replace('.', ',')}% dari harga beli)` : '', el); };
+  el.addEventListener('input', mg); mg();
+  const kt = $('#bg-kartu', el); if (kt) kt.onclick = async () => { await kembali(); kartuStokSheet(BMAP[b.id]); };
+  $('#bg-ok', el).onclick = async () => {
+    const nama = $('#bg-nama', el).value.trim(); if (!nama) { toast('Nama barang belum diisi.'); return; }
+    if (DATA.barang.some(x => x !== b && x.status !== 'Arsip' && x.nama.trim().toLowerCase() === nama.toLowerCase())) { toast('Barang dengan nama itu sudah ada.'); return; }
+    const kode = $('#bg-kode', el).value.trim(); if (kode && DATA.barang.some(x => x !== b && (x.kode || '').toLowerCase() === kode.toLowerCase())) { toast('Kode ' + kode + ' sudah dipakai barang lain.'); return; }
+    const data = { id: b ? b.id : uid(), kode, nama, kat: $('#bg-kat', el).value.trim() || 'Lainnya', sat: $('#bg-sat', el).value.trim() || 'pcs', hb: parseRp($('#bg-hb', el).value), hj: parseRp($('#bg-hj', el).value), min: parseQty($('#bg-min', el).value), status: b && $('#bg-arsip', el).checked ? 'Arsip' : 'Aktif' };
+    if (!b) data.awal = parseQty($('#bg-awal', el).value);
+    antre('barang', data, data.id + '-' + Date.now());
+    if (b) Object.assign(b, data); else { const x = Object.assign({ stok: data.awal || 0, belum: 0 }, data); DATA.barang.push(x); BMAP[x.id] = x; }
+    simpan(); await kembali(); toast(b ? 'Barang diperbarui' : 'Barang ditambahkan'); if (opt.lalu) opt.lalu(BMAP[data.id]); render(); sinkron();
+  };
+}
 
-/* ---------- FORMULIR NOTA ---------- */
-function draftKosong() { return { id: uid(), tgl: hariIni(), nama: '', hp: '', alamat: '', ambil: 'Ambil di gudang', items: [], diskon: 0, ongkir: 0, metode: 'Tunai', bayar: 0, terima: 0, terimaDiisi: false, jt: '', ket: '' }; }
-const subtotal = d => d.items.reduce((a, i) => a + Math.round((+i.qty || 0) * (+i.harga || 0)), 0);
-const totalNota = d => Math.max(0, subtotal(d) - (+d.diskon || 0) + (+d.ongkir || 0));
-let tDraf = 0;
-function ubahDraft() { if (!D) return; clearTimeout(tDraf); tDraf = setTimeout(() => { if (D && (D.items.length || D.nama)) LS.set('draft', D); }, 300); }
-function hapusDraft() { LS.del('draft'); }
-async function mulaiNota() {
+/* ---------- BARANG MASUK ---------- */
+function noMasukBerikut(tgl) {
+  const ymd = tgl.slice(2).replace(/-/g, ''); const pre = (DATA.toko.pb || 'BM') + '-' + ymd + '-' + CFG.huruf; let max = +(LS.get('seqm_' + ymd) || 0);
+  for (const m of (CACHE.masuk || []).concat(ANTRE.filter(o => o.tipe === 'masuk').map(o => o.data))) if (String(m.no).startsWith(pre)) { const k = parseInt(String(m.no).slice(pre.length), 10); if (k > max) max = k; }
+  return { no: pre + String(max + 1).padStart(3, '0'), ymd, seq: max + 1 };
+}
+function masukKosong() { return { id: uid(), tgl: hariIni(), supplier: '', noSup: '', items: [], ongkir: 0, metode: 'Tunai', bayar: 0, jt: '', ket: '', foto: [] }; }
+const subM = m => m.items.reduce((a, i) => a + Math.round((+i.qty || 0) * (+i.harga || 0)), 0);
+const totM = m => subM(m) + Math.round(+m.ongkir || 0);
+function simpanDrafM() { if (M && (M.items.length || M.supplier)) LS.set('draftMasuk', Object.assign({}, M, { foto: [] })); }
+async function mulaiMasuk() {
   if (!tersambung()) { toast('Sambungkan aplikasi dulu di Pengaturan.'); bukaPengaturan(); return; }
-  const draf = LS.get('draft');
-  if (draf && draf.items && draf.items.length) {
-    const k = await pilih('Nota sebelumnya belum disimpan', `${draf.items.length} barang, ${rp(totalNota(draf))}${draf.nama ? ', ' + esc(draf.nama) : ''}.`, [{ k: 'lanjut', label: 'Lanjutkan nota itu', kelas: 'btn-utama' }, { k: 'baru', label: 'Buang dan buat nota baru' }, { k: null, label: 'Batal' }]);
-    if (k === 'lanjut') { bukaEditor(draf); return; } if (k !== 'baru') return; hapusDraft();
-  }
-  bukaEditor(draftKosong());
+  const d = LS.get('draftMasuk');
+  if (d && d.items && d.items.length) { const k = await pilih('Penerimaan sebelumnya belum disimpan', `${d.items.length} barang${d.supplier ? ' dari ' + esc(d.supplier) : ''}.`, [{ k: 'lanjut', label: 'Lanjutkan', kelas: 'btn-utama' }, { k: 'baru', label: 'Buang dan mulai baru' }, { k: null, label: 'Batal' }]); if (k === 'lanjut') { bukaMasuk(d); return; } if (k !== 'baru') return; LS.del('draftMasuk'); }
+  bukaMasuk(masukKosong());
 }
-function bukaEditor(d) {
-  D = d;
-  const r = bukaLapis(edHTML(), { tipe: 'editor', onClose() { if (D && (D.items.length || D.nama)) LS.set('draft', D); D = null; } });
-  r.el.addEventListener('input', edInput); r.el.addEventListener('change', edUbah); r.el.addEventListener('keydown', edKey);
-  const h = $('#ed-hasil', r.el); h.addEventListener('mousedown', e => e.preventDefault()); h.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') e.preventDefault(); });
-  renderBaris(); renderAmbil(); renderBayar(); return r;
+function bukaMasuk(m) {
+  M = m; M.foto = M.foto || [];
+  const r = bukaLapis(masukHTML(), { tipe: 'masuk', onClose() { simpanDrafM(); M = null; } });
+  r.el.addEventListener('input', mInput); r.el.addEventListener('change', mUbah); r.el.addEventListener('keydown', mKey);
+  const h = $('#m-hasil', r.el); h.addEventListener('mousedown', e => e.preventDefault()); h.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') e.preventDefault(); });
+  mBaris(); mBayar(); mFoto();
 }
-function edHTML() {
-  const nb = noBerikut(D.tgl);
-  return `<div class="lapis-head"><div class="lapis-head-in"><button class="ikon-btn" data-act="kembali" aria-label="Kembali">${ikon('kembali')}</button><h1>Nota jual</h1><button class="btn btn-kecil" data-act="ed-buang">Buang</button></div></div>
-  <div class="lapis-isi">
-  <div class="kertas">
+function masukHTML() {
+  return `<div class="lapis-head"><div class="lapis-head-in"><button class="ikon-btn" data-act="kembali" aria-label="Kembali">${ikon('kembali')}</button><h1>Barang masuk</h1><button class="btn btn-kecil" data-act="m-buang">Buang</button></div></div>
+  <div class="lapis-isi"><div class="kertas">
     <div class="kertas-kepala">
-      <div class="grid2 kepala-no"><div class="fld no-nota"><span>No. nota</span><input id="ed-no" value="${esc(nb.no)}" readonly aria-readonly="true" title="Nomor dibuat otomatis saat nota disimpan"></div><label class="fld"><span>Tanggal</span><input id="ed-tgl" type="date" value="${D.tgl}"></label></div>
-      <label class="fld"><span>Kepada Yth. (pelanggan)</span><input id="ed-nama" list="dl-pel" value="${esc(D.nama)}" placeholder="Kosongkan untuk pembeli umum" autocomplete="off"></label>
-      <label class="fld"><span>No. HP / WA</span><input id="ed-hp" type="tel" inputmode="tel" value="${esc(D.hp)}"></label>
-      <datalist id="dl-pel">${DATA.pelanggan.map(k => `<option value="${esc(k.nama)}">${esc(k.hp || '')}</option>`).join('')}</datalist>
+      <div class="grid2 kepala-no"><div class="fld no-nota"><span>No. penerimaan</span><input id="m-no" value="${esc(noMasukBerikut(M.tgl).no)}" readonly></div><label class="fld"><span>Tanggal</span><input id="m-tgl" type="date" value="${M.tgl}"></label></div>
+      <label class="fld"><span>Dari supplier</span><input id="m-sup" list="dl-sup" value="${esc(M.supplier)}" placeholder="Nama toko / supplier" autocomplete="off"></label>
+      <label class="fld"><span>No. nota supplier</span><input id="m-nosup" value="${esc(M.noSup)}" placeholder="Nomor di nota kertas supplier"></label>
+      <datalist id="dl-sup">${DATA.supplier.map(s => `<option value="${esc(s)}">`).join('')}</datalist>
     </div>
-    <div class="kertas-cari"><div class="cari-deret"><div class="cari">${ikon('cari')}<input id="ed-cari" class="in" type="search" placeholder="Ketik nama atau kode barang" autocomplete="off" enterkeyhint="go"></div>${'BarcodeDetector' in window ? `<button type="button" class="ikon-btn kotak" data-act="ed-pindai" aria-label="Pindai barcode">${ikon('pindai')}</button>` : ''}</div><div id="ed-hasil" class="hasil-list" hidden></div></div>
-    <div class="kolom-judul"><span>Banyaknya × harga</span><span>Jumlah</span></div>
-    <div id="ed-baris"></div>
-    <div class="total-tabel">
-      <div class="tr"><span>Subtotal <span class="muted kecil" id="ed-jml-item"></span></span><b id="ed-sub" class="num"></b></div>
-      <label class="tr"><span>Diskon</span><input id="ed-diskon" class="in uang" inputmode="numeric" value="${D.diskon ? ribu(D.diskon) : ''}" placeholder="0"></label>
-      <label class="tr"><span>Ongkos kirim</span><input id="ed-ongkir" class="in uang" inputmode="numeric" value="${D.ongkir ? ribu(D.ongkir) : ''}" placeholder="0"></label>
-      <div class="tr besar"><span>Total</span><span id="ed-total-besar" class="num"></span></div>
-    </div>
+    <div class="kertas-cari"><div class="cari-deret"><div class="cari">${ikon('cari')}<input id="m-cari" class="in" type="search" placeholder="Ketik nama atau kode barang" autocomplete="off" enterkeyhint="go"></div>${'BarcodeDetector' in window ? `<button type="button" class="ikon-btn kotak" data-act="m-pindai" aria-label="Pindai barcode">${ikon('pindai')}</button>` : ''}</div><div id="m-hasil" class="hasil-list" hidden></div></div>
+    <div class="kolom-judul"><span>Banyaknya × harga beli</span><span>Jumlah</span></div>
+    <div id="m-baris"></div>
+    <div class="total-tabel"><div class="tr"><span>Subtotal</span><b id="m-sub" class="num"></b></div><label class="tr"><span>Ongkos kirim</span><input id="m-ongkir" class="in uang" inputmode="numeric" value="${M.ongkir ? ribu(M.ongkir) : ''}" placeholder="0"></label><div class="tr besar"><span>Total</span><span id="m-total-besar" class="num"></span></div></div>
   </div>
-  <section class="kartu kartu-p kolom"><h3 class="sub-h">Pengambilan barang</h3><div id="ed-ambil" class="kolom"></div></section>
-  <section class="kartu kartu-p kolom"><h3 class="sub-h">Pembayaran</h3><div id="ed-bayar" class="kolom"></div></section>
-  <section class="kartu kartu-p"><label class="fld"><span>Catatan untuk gudang / pelanggan</span><textarea id="ed-ket" rows="2" placeholder="Mis. antar sore, bongkar di samping rumah">${esc(D.ket)}</textarea></label></section>
-  </div>
-  <div class="lapis-kaki"><div class="lapis-kaki-in"><div class="kaki-total"><small>Total</small><b id="ed-total" class="num"></b></div><button class="btn btn-utama besar" data-act="ed-simpan">Simpan nota</button></div></div>`;
+  <section class="kartu kartu-p kolom"><h3 class="sub-h">Pembayaran ke supplier</h3><div id="m-bayar" class="kolom"></div></section>
+  <section class="kartu kartu-p kolom"><label class="fld"><span>Catatan</span><textarea id="m-ket" rows="2" placeholder="Mis. 2 sak pecah, diganti minggu depan">${esc(M.ket)}</textarea></label>
+    <div class="fld"><span>Foto nota supplier</span><div class="foto-deret" id="m-foto"></div><div class="deret"><label class="btn btn-kecil">${ikon('kamera')} Ambil foto<input type="file" accept="image/*" capture="environment" hidden data-foto="1"></label><label class="btn btn-kecil">Pilih dari galeri<input type="file" accept="image/*" multiple hidden data-foto="1"></label></div><span class="muted kecil">Foto disimpan di Google Drive dan tautannya tercatat di spreadsheet.</span></div>
+  </section></div>
+  <div class="lapis-kaki"><div class="lapis-kaki-in"><div class="kaki-total"><small>Total</small><b id="m-total" class="num"></b></div><button class="btn btn-utama besar" data-act="m-simpan">Simpan</button></div></div>`;
 }
-const AMBIL = [['Ambil di gudang', 'Pelanggan ambil sekarang'], ['Diantar', 'Gudang mengantar'], ['Ambil nanti', 'Barang dititip dulu'], ['Sudah dibawa', 'Diambil langsung dari toko']];
-function renderAmbil() {
-  const box = $('#ed-ambil'); if (!box) return;
-  box.innerHTML = `<div class="pilihan">${AMBIL.map(([v, s]) => `<button type="button" class="${D.ambil === v ? 'aktif' : ''}" data-act="ed-ambil" data-v="${v}">${v}<small>${s}</small></button>`).join('')}</div>
-  ${D.ambil === 'Diantar' ? `<label class="fld"><span>Alamat antar</span><input id="ed-alamat" value="${esc(D.alamat)}" placeholder="Jalan, patokan, kelurahan"></label>` : ''}
-  <p class="muted kecil">${D.ambil === 'Sudah dibawa' ? 'Nota langsung tercatat selesai dan tidak masuk antrean gudang.' : 'Nota masuk ke antrean aplikasi Gudang untuk disiapkan.'}</p>`;
+function mBaris() {
+  const box = $('#m-baris'); if (!box) return;
+  if (!M.items.length) { box.innerHTML = `<div class="baris-kosong">Belum ada barang. Ketik nama barang dari nota supplier.</div>`; mTotal(); return; }
+  box.innerHTML = M.items.map((it, i) => { const b = BMAP[it.bid]; return `<div class="baris" data-i="${i}">
+    <div class="b-atas"><div class="b-nama">${esc(it.nama)}</div><div class="b-jml">${ribu(Math.round(it.qty * it.harga))}</div><button type="button" class="x" data-act="m-hapus" aria-label="Hapus ${esc(it.nama)}">×</button></div>
+    <div class="b-isi"><div class="qty"><button type="button" data-act="m-qty" data-d="-1" aria-label="Kurangi">−</button><input class="in-qty" inputmode="decimal" value="${angka(it.qty)}" aria-label="Banyaknya"><button type="button" data-act="m-qty" data-d="1" aria-label="Tambah">+</button></div><span class="b-sat">${esc(it.sat || '')}</span><span class="kali">×</span><input class="in in-harga uang" inputmode="numeric" value="${ribu(it.harga)}" aria-label="Harga beli"></div>
+    <div class="b-info">${infoM(it)}</div>
+    <label class="b-hj"><span>Harga jual baru</span><input class="in in-hj uang" inputmode="numeric" value="${ribu(it.hjBaru || 0)}"></label></div>`; }).join('');
+  mTotal();
 }
-function stokSiap(bid) { const b = BMAP[bid]; return b ? stokTampil(b) : 0; }
-function infoBaris(it) {
-  if (!it.bid) return 'Tanpa stok';
-  const b = BMAP[it.bid]; if (!b) return 'Barang tidak ada di daftar';
-  const st = stokSiap(it.bid); const pakai = D.items.filter(x => x.bid === it.bid).reduce((a, x) => a + (+x.qty || 0), 0);
-  return `Stok ${angka(st)} ${esc(b.sat)}` + (pakai > st ? ` · <span class="kurang">stok kurang ${angka(pakai - st)}</span>` : '');
+function infoM(it) { const b = BMAP[it.bid]; return b ? `Stok ${angka(b.stok)} → ${angka(bulat(b.stok + (+it.qty || 0)))} ${esc(b.sat)} · harga beli lama ${rp(b.hb)}` : ''; }
+function mBayar() {
+  const box = $('#m-bayar'); if (!box) return;
+  box.innerHTML = `<div class="chips">${['Tunai', 'Transfer', 'Tempo'].map(m => `<button type="button" class="chip${M.metode === m ? ' aktif' : ''}" data-act="m-metode" data-m="${m}">${m === 'Tempo' ? 'Tempo (utang)' : m}</button>`).join('')}</div>
+  ${M.metode === 'Tempo' ? `<div class="grid2"><label class="fld"><span>Dibayar sekarang</span><input id="m-dp" class="in uang" inputmode="numeric" value="${M.bayar ? ribu(M.bayar) : ''}" placeholder="0"></label><label class="fld"><span>Jatuh tempo</span><input id="m-jt" type="date" value="${M.jt || ''}"></label></div>` : '<p class="muted kecil">Dicatat lunas sebesar total.</p>'}
+  <div id="m-info" class="info-bayar"></div>`; mTotal();
 }
-function renderBaris() {
-  const box = $('#ed-baris'); if (!box) return;
-  if (!D.items.length) { box.innerHTML = `<div class="baris-kosong">Belum ada barang. Ketik nama atau kode barang di kolom cari.</div>`; perbaruiTotal(); return; }
-  box.innerHTML = D.items.map((it, i) => `<div class="baris" data-i="${i}">
-    <div class="b-atas">${it.bid ? `<div class="b-nama">${esc(it.nama)}</div>` : `<input class="in in-nama" value="${esc(it.nama)}" aria-label="Nama barang">`}<div class="b-jml">${ribu(Math.round(it.qty * it.harga))}</div><button type="button" class="x" data-act="ed-hapus" aria-label="Hapus ${esc(it.nama)}">×</button></div>
-    <div class="b-isi"><div class="qty"><button type="button" data-act="ed-qty" data-d="-1" aria-label="Kurangi">−</button><input class="in-qty" inputmode="decimal" value="${angka(it.qty)}" aria-label="Banyaknya"><button type="button" data-act="ed-qty" data-d="1" aria-label="Tambah">+</button></div>${it.bid ? `<span class="b-sat">${esc(it.sat || '')}</span>` : `<input class="in in-sat" value="${esc(it.sat || '')}" placeholder="satuan" aria-label="Satuan" style="width:84px;min-height:42px">`}<span class="kali">×</span><input class="in in-harga uang" inputmode="numeric" value="${ribu(it.harga)}" aria-label="Harga jual"></div>
-    <div class="b-info">${infoBaris(it)}</div></div>`).join('');
-  perbaruiTotal();
-}
-function perbaruiInfo() { $$('#ed-baris .baris').forEach(b => { const it = D.items[+b.dataset.i]; if (it) { const e = $('.b-info', b); if (e) e.innerHTML = infoBaris(it); } }); }
-function renderBayar() {
-  const box = $('#ed-bayar'); if (!box) return;
-  let h = `<div class="chips">${['Tunai', 'Transfer', 'QRIS', 'Bon'].map(m => `<button type="button" class="chip${D.metode === m ? ' aktif' : ''}" data-act="ed-metode" data-m="${m}">${m === 'Bon' ? 'Bon (utang)' : m}</button>`).join('')}</div>`;
-  if (D.metode === 'Tunai') h += `<label class="fld"><span>Uang diterima</span><input id="ed-terima" class="in uang besar" inputmode="numeric" placeholder="Kosongkan bila uang pas" value="${D.terimaDiisi ? ribu(D.terima) : ''}"></label><div class="chips" id="ed-cepat"></div>`;
-  if (D.metode === 'Bon') h += `<div class="grid2"><label class="fld"><span>Uang muka (DP)</span><input id="ed-dp" class="in uang" inputmode="numeric" value="${D.bayar ? ribu(D.bayar) : ''}" placeholder="0"></label><label class="fld"><span>Jatuh tempo</span><input id="ed-jt" type="date" value="${D.jt || ''}"></label></div>`;
-  if (D.metode === 'Transfer' || D.metode === 'QRIS') h += `<p class="muted kecil">Dicatat lunas sebesar total nota.</p>`;
-  h += `<div id="ed-info" class="info-bayar"></div>`; box.innerHTML = h; perbaruiTotal();
-}
-function uangCepat(t) { if (t <= 0) return []; const out = [t]; for (const k of [5000, 10000, 50000, 100000]) { const v = Math.ceil(t / k) * k; if (v > t && !out.includes(v)) out.push(v); } for (const v of [50000, 100000, 200000, 500000, 1000000]) if (v > t && !out.includes(v)) out.push(v); return out.sort((a, b) => a - b).slice(0, 5); }
-function perbaruiTotal() {
-  if (!D) return; const sub = subtotal(D), tot = totalNota(D);
-  setText('#ed-sub', rp(sub)); setText('#ed-total-besar', rp(tot)); setText('#ed-total', rp(tot)); setText('#ed-jml-item', D.items.length ? '(' + D.items.length + ' barang)' : '');
-  const info = $('#ed-info'); if (info) { let s = '';
-    if (D.metode === 'Tunai') { if (D.terimaDiisi && D.terima > 0) { const d = D.terima - tot; s = d >= 0 ? `<span>Kembalian</span><b class="num">${rp(d)}</b>` : `<span class="merah">Uang kurang ${rp(-d)}. Pilih Bon bila sisanya diutang.</span>`; } else if (tot > 0) s = `<span>Uang pas</span><b class="num">${rp(tot)}</b>`; }
-    else if (D.metode === 'Bon') s = `<span>Sisa bon pelanggan</span><b class="num">${rp(Math.max(0, tot - (D.bayar || 0)))}</b>`;
-    info.innerHTML = s; }
-  const cp = $('#ed-cepat'); if (cp) cp.innerHTML = uangCepat(tot).map(v => `<button type="button" class="chip" data-act="ed-uang" data-v="${v}">${v === tot ? 'Uang pas' : ribu(v)}</button>`).join('');
-}
-function isiPelanggan() { const k = DATA.pelanggan.find(c => c.nama.trim().toLowerCase() === D.nama.trim().toLowerCase()); if (!k) return; const hp = $('#ed-hp'); if (hp && !hp.value && k.hp) { hp.value = k.hp; D.hp = k.hp; } if (!D.alamat && k.alamat) D.alamat = k.alamat; }
-function tampilHasil(q) {
-  const box = $('#ed-hasil'); if (!box) return; q = q.trim(); if (!q) { box.innerHTML = ''; box.hidden = true; return; }
+function mTotal() { if (!M) return; setText('#m-sub', rp(subM(M))); setText('#m-total-besar', rp(totM(M))); setText('#m-total', rp(totM(M))); const i = $('#m-info'); if (i) i.innerHTML = M.metode === 'Tempo' ? `<span>Sisa utang ke supplier</span><b class="num">${rp(Math.max(0, totM(M) - (M.bayar || 0)))}</b>` : ''; }
+function mFoto() { const box = $('#m-foto'); if (!box) return; box.innerHTML = M.foto.map((u, i) => `<div class="thumb"><img src="${u}" alt="Foto nota ${i + 1}"><button type="button" class="x" data-act="m-hapus-foto" data-i="${i}" aria-label="Hapus foto">×</button></div>`).join(''); }
+function mHasil(q) {
+  const box = $('#m-hasil'); if (!box) return; q = q.trim(); if (!q) { box.innerHTML = ''; box.hidden = true; return; }
   const h = cariBarang(q, 7);
-  let s = h.map((b, i) => { const st = stokTampil(b); return `<button type="button" class="hasil${i === 0 ? ' fokus' : ''}" data-act="ed-pilih" data-id="${b.id}"><span class="h-n"><b>${esc(b.nama)}</b><small>${esc([b.kode, b.kat].filter(Boolean).join(' · '))}</small></span><span class="h-k"><b class="num">${rp(b.hj)}</b><small class="${st <= 0 ? 'merah' : ''}">stok ${angka(st)} ${esc(b.sat)}</small></span></button>`; }).join('');
-  s += `<button type="button" class="hasil hasil-tambah" data-act="ed-bebas">${ikon('plus')}<span>Baris tanpa stok “${esc(q)}”<small>Untuk ongkos, jasa, atau barang yang belum ada di daftar</small></span></button>`;
-  box.innerHTML = s; box.hidden = false;
+  box.innerHTML = h.map((b, i) => `<button type="button" class="hasil${i === 0 ? ' fokus' : ''}" data-act="m-pilih" data-id="${b.id}"><span class="h-n"><b>${esc(b.nama)}</b><small>${esc([b.kode, b.kat].filter(Boolean).join(' · '))}</small></span><span class="h-k"><b class="num">${rp(b.hb)}</b><small>stok ${angka(b.stok)} ${esc(b.sat)}</small></span></button>`).join('') +
+    `<button type="button" class="hasil hasil-tambah" data-act="m-baru">${ikon('plus')}<span>Barang baru “${esc(q)}”<small>Masuk daftar barang toko</small></span></button>`;
+  box.hidden = false;
 }
-function bersihCari() { const i = $('#ed-cari'); if (!i) return; i.value = ''; tampilHasil(''); if (matchMedia('(pointer:fine)').matches) i.focus(); else i.blur(); }
-function tambahBaris(b) {
-  if (!D) return; let idx = -1;
-  if (b.bid) { idx = D.items.findIndex(i => i.bid === b.bid); if (idx > -1) D.items[idx].qty = bulat((+D.items[idx].qty || 0) + 1); }
-  if (idx < 0) { D.items.push(b); idx = D.items.length - 1; }
-  renderBaris(); ubahDraft(); const el = $(`#ed-baris .baris[data-i="${idx}"]`); if (el) { el.classList.add('baru'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } return idx;
+function mTambah(b) {
+  let idx = M.items.findIndex(i => i.bid === b.id);
+  if (idx > -1) M.items[idx].qty = bulat(M.items[idx].qty + 1); else { M.items.push({ bid: b.id, nama: b.nama, sat: b.sat, qty: 1, harga: +b.hb || 0, hjBaru: +b.hj || 0 }); idx = M.items.length - 1; }
+  mBaris(); simpanDrafM(); const i = $('#m-cari'); if (i) { i.value = ''; mHasil(''); if (matchMedia('(pointer:fine)').matches) i.focus(); else i.blur(); }
+  const el = $(`#m-baris .baris[data-i="${idx}"]`); if (el) { el.classList.add('baru'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
 }
-function edInput(e) {
-  const t = e.target; if (!D) return;
-  if (t.id === 'ed-cari') { tampilHasil(t.value); return; }
-  const b = t.closest('.baris'); if (b) { const it = D.items[+b.dataset.i]; if (!it) return;
-    if (t.classList.contains('in-qty')) it.qty = parseQty(t.value); else if (t.classList.contains('in-harga')) it.harga = parseRp(t.value); else if (t.classList.contains('in-nama')) it.nama = t.value; else if (t.classList.contains('in-sat')) it.sat = t.value;
-    setText('.b-jml', ribu(Math.round(it.qty * it.harga)), b); perbaruiInfo(); perbaruiTotal(); ubahDraft(); return; }
-  switch (t.id) {
-    case 'ed-tgl': if (!t.value) return; D.tgl = t.value; $('#ed-no').value = noBerikut(D.tgl).no; break;
-    case 'ed-nama': D.nama = t.value; isiPelanggan(); break; case 'ed-hp': D.hp = t.value; break; case 'ed-alamat': D.alamat = t.value; break;
-    case 'ed-diskon': D.diskon = parseRp(t.value); break; case 'ed-ongkir': D.ongkir = parseRp(t.value); break;
-    case 'ed-terima': D.terima = parseRp(t.value); D.terimaDiisi = t.value.trim() !== ''; break;
-    case 'ed-dp': D.bayar = parseRp(t.value); break; case 'ed-jt': D.jt = t.value; break; case 'ed-ket': D.ket = t.value; break;
-    default: return;
-  }
-  perbaruiTotal(); ubahDraft();
+function mInput(e) {
+  const t = e.target; if (!M) return;
+  if (t.id === 'm-cari') { mHasil(t.value); return; }
+  const b = t.closest('.baris'); if (b) { const it = M.items[+b.dataset.i]; if (!it) return; if (t.classList.contains('in-qty')) it.qty = parseQty(t.value); else if (t.classList.contains('in-harga')) it.harga = parseRp(t.value); else if (t.classList.contains('in-hj')) it.hjBaru = parseRp(t.value); setText('.b-jml', ribu(Math.round(it.qty * it.harga)), b); $('.b-info', b).innerHTML = infoM(it); mTotal(); simpanDrafM(); return; }
+  switch (t.id) { case 'm-tgl': if (!t.value) return; M.tgl = t.value; $('#m-no').value = noMasukBerikut(M.tgl).no; break; case 'm-sup': M.supplier = t.value; break; case 'm-nosup': M.noSup = t.value; break; case 'm-ongkir': M.ongkir = parseRp(t.value); break; case 'm-dp': M.bayar = parseRp(t.value); break; case 'm-jt': M.jt = t.value; break; case 'm-ket': M.ket = t.value; break; default: return; }
+  mTotal(); simpanDrafM();
 }
-function edUbah(e) { const t = e.target; if (t.id === 'ed-tgl' || t.id === 'ed-jt') edInput(e); if (t.classList.contains('in-qty')) { const b = t.closest('.baris'); const it = b && D && D.items[+b.dataset.i]; if (it) t.value = angka(it.qty); } }
-function edKey(e) {
-  if (e.target.id !== 'ed-cari') return;
-  if (e.key === 'Enter') { e.preventDefault(); const f = $('#ed-hasil .hasil.fokus') || $('#ed-hasil .hasil'); if (f) f.click(); }
-  else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { const L = $$('#ed-hasil .hasil'); if (!L.length) return; e.preventDefault(); let i = L.findIndex(x => x.classList.contains('fokus')); L.forEach(x => x.classList.remove('fokus')); i = (i + (e.key === 'ArrowDown' ? 1 : -1) + L.length) % L.length; L[i].classList.add('fokus'); }
+async function mUbah(e) {
+  const t = e.target; if (!M) return; if (t.id === 'm-tgl' || t.id === 'm-jt') { mInput(e); return; }
+  if (t.dataset.foto) { const files = Array.from(t.files || []); t.value = ''; for (const f of files) { if (M.foto.length >= 4) { toast('Maksimal 4 foto per penerimaan.'); break; } try { M.foto.push(await kompres(f, 1400, 0.72)); } catch (err) { toast(err.message); } } mFoto(); }
 }
-async function simpanNota() {
-  const d = D; if (!d) return;
-  d.items = d.items.filter(i => String(i.nama || '').trim());
-  if (!d.items.length) { toast('Tambahkan minimal satu barang.'); return; }
-  if (d.items.some(i => !((+i.qty || 0) > 0))) { toast('Ada barang dengan banyaknya 0.'); return; }
-  const tot = totalNota(d);
-  let bayar, kembali = 0;
-  if (d.metode === 'Tunai') { const terima = d.terimaDiisi && d.terima > 0 ? d.terima : tot; if (terima < tot) { toast('Uang kurang ' + rp(tot - terima) + '. Pilih Bon bila sisanya diutang.'); return; } bayar = tot; kembali = terima - tot; }
-  else if (d.metode === 'Bon') { bayar = Math.min(+d.bayar || 0, tot); if (!d.nama.trim()) { toast('Isi nama pelanggan untuk nota bon.'); const i = $('#ed-nama'); if (i) { i.focus(); i.scrollIntoView({ block: 'center' }); } return; } }
-  else bayar = tot;
-  if (d.ambil === 'Diantar' && !String(d.alamat || '').trim()) { toast('Isi alamat antar.'); const i = $('#ed-alamat'); if (i) i.focus(); return; }
-  const nb = noBerikut(d.tgl);
-  const items = d.items.map(i => ({ bid: i.bid || null, kode: i.kode || '', nama: i.nama.trim(), sat: (i.sat || '').trim(), qty: bulat(+i.qty), harga: Math.round(+i.harga || 0) }));
-  const n = { id: d.id, no: nb.no, tgl: d.tgl, jam: jamKini(), nama: d.nama.trim(), hp: d.hp.trim(), alamat: d.ambil === 'Diantar' ? (d.alamat || '').trim() : '', items, sub: subtotal(d), diskon: Math.round(+d.diskon || 0), ongkir: Math.round(+d.ongkir || 0), total: tot, metode: d.metode, bayar, kembali, jt: bayar < tot ? d.jt : '', ambil: d.ambil, status: d.ambil === 'Sudah dibawa' ? 'Selesai' : 'Menunggu', petugas: '', kasir: CFG.nama, ket: d.ket.trim(), batal: false, lunas: 0, sisa: tot - bayar, dibuat: Date.now(), terkirim: false };
-  kenal()[n.id] = n; LOKAL.unshift(n.id); LS.set('seq_' + nb.ymd, nb.seq);
-  antre('nota', { id: n.id, no: n.no, tgl: n.tgl, jam: n.jam, nama: n.nama, hp: n.hp, alamat: n.alamat, items, diskon: n.diskon, ongkir: n.ongkir, metode: n.metode, bayar: d.metode === 'Bon' ? bayar : n.bayar, terima: d.metode === 'Tunai' ? tot + kembali : 0, jt: n.jt, ambil: n.ambil, kasir: CFG.nama, ket: n.ket }, n.id);
-  hapusDraft(); D = null;
-  const r = atas(); const baru = r.el.cloneNode(false); baru.classList.add('masuk'); r.el.replaceWith(baru); r.el = baru; r.onClose = null; r.tipe = 'detail'; r.notaId = n.id; r.segarkan = t => { t.el.innerHTML = detailHTML(cariNota(t.notaId)); }; r.segarkan(r); baru.scrollTop = 0;
-  toast('Nota tersimpan.' + (n.status === 'Menunggu' ? ' Dikirim ke gudang.' : '')); sinkron();
+function mKey(e) { if (e.target.id === 'm-cari' && e.key === 'Enter') { e.preventDefault(); const f = $('#m-hasil .hasil'); if (f) f.click(); } }
+async function simpanMasuk() {
+  const m = M; if (!m) return;
+  if (!m.items.length) { toast('Tambahkan minimal satu barang.'); return; }
+  if (m.items.some(i => !((+i.qty || 0) > 0))) { toast('Ada barang dengan banyaknya 0.'); return; }
+  if (!m.supplier.trim()) { toast('Isi nama supplier.'); const i = $('#m-sup'); if (i) i.focus(); return; }
+  const nb = noMasukBerikut(m.tgl); const tot = totM(m); const bayar = m.metode === 'Tempo' ? Math.min(+m.bayar || 0, tot) : tot;
+  const data = { id: m.id, no: nb.no, tgl: m.tgl, jam: jamKini(), supplier: m.supplier.trim(), noSup: m.noSup.trim(), items: m.items.map(i => ({ bid: i.bid, nama: i.nama, sat: i.sat, qty: bulat(+i.qty), harga: Math.round(+i.harga || 0), hjBaru: Math.round(+i.hjBaru || 0) })), ongkir: Math.round(+m.ongkir || 0), metode: m.metode, bayar, jt: bayar < tot ? m.jt : '', petugas: CFG.nama, ket: m.ket.trim(), foto: m.foto.slice() };
+  antre('masuk', data, data.id); LS.set('seqm_' + nb.ymd, nb.seq);
+  for (const i of data.items) { const b = BMAP[i.bid]; if (b) { b.stok = bulat(b.stok + i.qty); if (i.harga > 0) b.hb = i.harga; if (i.hjBaru > 0) b.hj = i.hjBaru; } }
+  if (data.supplier && !DATA.supplier.includes(data.supplier)) DATA.supplier.push(data.supplier);
+  LS.del('draftMasuk'); M = null; const r = atas(); if (r) r.onClose = null; simpan();
+  await kembali(); toast('Barang masuk ' + data.no + ' tersimpan. Stok bertambah.'); ke('riwayat'); sinkron();
 }
 
-/* ---------- DETAIL NOTA ---------- */
-function bukaDetail(id) {
-  const n = cariNota(id); if (!n) { toast('Nota tidak ditemukan di HP ini.'); return; }
-  bukaLapis(detailHTML(n), { tipe: 'detail', notaId: id, segarkan: t => { const x = cariNota(t.notaId); if (x) t.el.innerHTML = detailHTML(x); } });
-  if (tersambung() && !n.belumTerkirim) api('nota', { id }).then(r => { perbaruiKenal(r.nota); simpan(); segarkanAtas(); }).catch(() => { });
-}
-function detailHTML(n) {
-  let banner = '';
-  if (n.belumTerkirim) banner += `<div class="banner"><span class="kecil">${ikon('awan')} Belum terkirim ke spreadsheet. Dikirim otomatis saat internet tersedia.</span></div>`;
-  if (n.batal) banner += `<div class="banner banner-merah"><div><b>Nota dibatalkan</b>${n.alasan ? ' · ' + esc(n.alasan) : ''}<div class="kecil">${n.batalTertunda ? 'Pembatalan menunggu terkirim.' : 'Stok sudah dikembalikan.'}</div></div></div>`;
-  else {
-    if (n.sisa > 0) banner += `<div class="banner ${n.jt && n.jt < hariIni() ? 'banner-merah' : 'banner-kuning'}"><div><b>Sisa bon ${rp(n.sisa)}</b>${n.jt ? `<div class="kecil">Jatuh tempo ${tglPanjang(n.jt)}</div>` : ''}</div><button class="btn btn-kecil btn-gelap" data-act="nt-bayar" data-id="${n.id}">Terima bayar</button></div>`;
-    banner += `<div class="banner"><div class="kecil"><b>Gudang:</b> ${n.status === 'Selesai' ? 'barang sudah diambil/diantar' : n.status === 'Disiapkan' ? 'barang sedang disiapkan' : 'menunggu disiapkan'}${n.petugas ? ' · ' + esc(n.petugas) : ''} · ${esc(n.ambil || '')}${n.alamat ? ' ke ' + esc(n.alamat) : ''}</div>${pilGudang(n)}</div>`;
+/* ---------- RIWAYAT BARANG MASUK ---------- */
+VIEWS.riwayat = {
+  html() {
+    if (!tersambung()) return kartuSambung();
+    const tunda = ANTRE.filter(o => o.tipe === 'masuk').map(o => Object.assign({}, o.data, { tertunda: true, total: o.data.items.reduce((a, i) => a + Math.round(i.qty * i.harga), 0) + (o.data.ongkir || 0) }));
+    const L = tunda.concat((CACHE.masuk || []).filter(m => !tunda.some(t => t.id === m.id)));
+    return `<div class="bag-head"><h2 class="bag">Riwayat barang masuk</h2><button class="btn btn-kecil btn-utama" data-act="masuk-baru">${ikon('plus')} Barang masuk</button></div>
+    <p class="muted kecil">30 hari terakhir${U.riw.memuat ? ' · memuat…' : U.riw.err ? ' · data tersimpan di HP' : ''}</p>
+    ${L.length ? `<div class="daftar">${L.map(m => `<button class="item" data-act="buka-masuk" data-id="${m.id}"><div class="utama"><div class="j">${esc(m.supplier || 'Supplier')}</div><div class="s"><span class="no-kecil">${esc(m.no)}</span> · ${tglPendek(m.tgl)} · ${m.items.length} barang${m.noSup ? ' · nota ' + esc(m.noSup) : ''}</div></div><div class="kanan"><div class="nilai">${rp(m.total)}</div>${m.tertunda ? '<span class="pil pil-antre">Belum terkirim</span>' : m.statusBayar === 'Lunas' ? '<span class="pil pil-lunas">Lunas</span>' : '<span class="pil pil-bon">Utang</span>'}</div></button>`).join('')}</div>` : `<div class="kartu kosong"><b>Belum ada barang masuk</b><span>Catat barang dari supplier dengan tombol + di bawah.</span></div>`}`;
+  },
+  async masuk() {
+    if (!tersambung()) return; U.riw.memuat = true; if (V === 'riwayat') render();
+    try { const r = await api('masuk', { dari: tambahHari(hariIni(), -30) }); CACHE.masuk = r.masuk; U.riw.err = ''; simpan(); } catch (e) { U.riw.err = e.message; }
+    U.riw.memuat = false; if (V === 'riwayat') render();
   }
-  return `<div class="lapis-head"><div class="lapis-head-in"><button class="ikon-btn" data-act="kembali" aria-label="Kembali">${ikon('kembali')}</button><h1>${esc(n.no)}</h1><button class="ikon-btn" data-act="nt-lain" data-id="${n.id}" aria-label="Pilihan lain">${ikon('titik')}</button></div></div>
-  <div class="lapis-isi">${banner}<div class="layar-nota"><div class="pa">${notaA(n, 'nota')}</div></div></div>
-  <div class="lapis-kaki"><div class="lapis-kaki-in"><button class="btn" data-act="nt-gambar" data-id="${n.id}">${ikon('bagi')} Bagikan</button><button class="btn" data-act="nt-wa" data-id="${n.id}">${ikon('wa')} WA</button><button class="btn btn-utama" style="flex:1" data-act="nt-cetak" data-id="${n.id}">${ikon('cetak')} Cetak</button></div></div>`;
+};
+function bukaDetailMasuk(id) {
+  const op = ANTRE.find(o => o.tipe === 'masuk' && o.data.id === id); const m = op ? Object.assign({}, op.data, { tertunda: true }) : (CACHE.masuk || []).find(x => x.id === id); if (!m) return;
+  const tot = m.total || (m.items.reduce((a, i) => a + Math.round(i.qty * i.harga), 0) + (m.ongkir || 0));
+  bukaSheet(`<div class="sh-head"><h3>${esc(m.no)}</h3><p class="muted kecil">${esc(m.supplier)} · ${tglPanjang(m.tgl)}${m.noSup ? ' · nota supplier ' + esc(m.noSup) : ''}${m.petugas ? ' · ' + esc(m.petugas) : ''}</p></div><div class="sh-body">
+    ${m.tertunda ? '<div class="banner"><span class="kecil">Belum terkirim ke spreadsheet. Dikirim otomatis saat internet tersedia.</span></div>' : ''}
+    <div class="tabel-wrap"><table class="tabel"><thead><tr><th>Barang</th><th class="n">Banyaknya</th><th class="n">Harga</th><th class="n">Jumlah</th></tr></thead><tbody>${m.items.map(i => `<tr><td>${esc(i.nama)}</td><td class="n">${angka(i.qty)} ${esc(i.sat || '')}</td><td class="n">${ribu(i.harga)}</td><td class="n">${ribu(Math.round(i.qty * i.harga))}</td></tr>`).join('')}</tbody></table></div>
+    <div class="tr tebal"><span>Total</span><b class="num">${rp(tot)}</b></div>
+    <p class="kecil">Pembayaran: <b>${esc(m.metode)}</b>${m.metode === 'Tempo' ? ` · dibayar ${rp(m.bayar || 0)}${m.jt ? ' · jatuh tempo ' + tglPendek(m.jt) : ''}` : ''}${m.statusBayar ? ' · ' + esc(m.statusBayar) : ''}</p>
+    ${m.ket ? `<p class="kecil"><b>Catatan:</b> ${esc(m.ket)}</p>` : ''}
+    ${(m.foto || []).length ? `<div class="deret">${m.foto.map((u, i) => /^data:/.test(u) ? `<img src="${u}" alt="Foto nota ${i + 1}" style="width:86px;height:86px;object-fit:cover;border-radius:8px">` : /^https:/.test(u) ? `<a class="btn btn-kecil" href="${esc(u)}" target="_blank" rel="noopener">${ikon('kamera')} Foto nota ${i + 1}</a>` : `<span class="muted kecil">Foto nota ${i + 1} (mode coba: tidak diunggah)</span>`).join('')}</div>` : ''}
+  </div><div class="sh-foot"><button class="btn" data-act="kembali">Tutup</button></div>`);
 }
-function menuNota(n) {
-  const r = bukaSheet(`<div class="sh-head"><h3>${esc(n.no)}</h3></div><div class="menu">
-    <button data-mn="sj">${ikon('truk')}<span>Cetak surat jalan<small>Daftar barang tanpa harga untuk sopir</small></span></button>
-    <button data-mn="gambar">${ikon('bagi')}<span>Bagikan gambar nota</span></button>
-    ${!n.batal && n.sisa > 0 ? `<button data-mn="bayar">${ikon('dompet')}<span>Terima pembayaran bon</span></button>` : ''}
-    <button data-mn="salin">${ikon('salin')}<span>Salin jadi nota baru<small>Untuk pesanan yang sama, atau memperbaiki nota yang dibatalkan</small></span></button>
-    <button data-mn="segar">${ikon('segar')}<span>Muat ulang dari spreadsheet</span></button>
-    ${n.batal ? '' : `<button data-mn="batal" class="merah">${ikon('hapus')}<span>Batalkan nota<small>Stok dikembalikan, nota tetap tercatat dengan tanda batal</small></span></button>`}
-  </div>`);
-  $$('[data-mn]', r.el).forEach(b => b.onclick = async () => {
-    const k = b.dataset.mn; await kembali();
-    if (k === 'sj') sheetCetak(n, 'sj'); else if (k === 'gambar') bagikanGambar(n); else if (k === 'bayar') sheetBayar([n], 'Terima pembayaran');
-    else if (k === 'salin') salinNota(n); else if (k === 'batal') batalkanNota(n);
-    else if (k === 'segar') { try { const x = await api('nota', { id: n.id }); perbaruiKenal(x.nota); simpan(); segarkanAtas(); toast('Nota diperbarui'); } catch (e) { toast(e.message); } }
-  });
+
+/* ---------- HITUNG STOK ---------- */
+function hitungan() { return CACHE.hitung || (CACHE.hitung = {}); }
+VIEWS.hitung = {
+  html() {
+    if (!tersambung()) return kartuSambung();
+    const H = hitungan(); const n = Object.keys(H).filter(k => String(H[k]).trim() !== '').length;
+    const kats = [...new Set(DATA.barang.filter(b => b.status !== 'Arsip').map(b => b.kat || 'Lainnya'))].sort((a, b) => a.localeCompare(b, 'id'));
+    const ch = (v, l) => `<button class="chip${U.hit.kat === v ? ' aktif' : ''}" data-act="hit-kat" data-v="${esc(v)}">${esc(l)}</button>`;
+    return `<div class="bag-head"><h2 class="bag">Hitung stok fisik</h2></div>
+    <p class="muted kecil">Hitung barang yang ada di gudang lalu isi angkanya. Barang yang sudah dibayar tapi belum diambil pelanggan ikut dihitung. Selisih dicatat sebagai penyesuaian di kartu stok. Isian tersimpan di HP sampai disimpan.</p>
+    <div class="cari">${ikon('cari')}<input id="hit-q" class="in" type="search" placeholder="Cari barang" value="${esc(U.hit.q)}" autocomplete="off"></div>
+    <div class="chips">${ch('', 'Semua')}${ch('~isi', 'Sudah diisi')}${kats.map(k => ch(k, k)).join('')}</div>
+    <div id="hit-isi"></div>
+    <div class="kartu kartu-p deret" style="position:sticky;bottom:calc(var(--nav-h) + 10px + env(safe-area-inset-bottom,0px));justify-content:space-between;box-shadow:var(--shadow)"><span><b id="hit-n">${n}</b> barang dihitung</span><div class="deret">${n ? '<button class="btn btn-kecil" data-act="hit-kosong">Kosongkan</button>' : ''}<button class="btn btn-utama" data-act="hit-simpan"${n ? '' : ' disabled'}>Simpan hitungan</button></div></div>`;
+  },
+  lalu() { isiHitung(); }
+};
+function selisihTeks(b, v) { if (String(v).trim() === '') return ''; const d = bulat(parseQty(v) - fisik(b)); return d === 0 ? '<span class="hijau">Cocok</span>' : `<span class="${d < 0 ? 'merah' : 'hijau'}">Selisih ${d > 0 ? '+' : ''}${angka(d)} ${esc(b.sat)}</span>`; }
+function isiHitung() {
+  const box = $('#hit-isi'); if (!box) return; const H = hitungan();
+  let L = DATA.barang.filter(b => b.status !== 'Arsip');
+  if (U.hit.kat === '~isi') L = L.filter(b => H[b.id] !== undefined && String(H[b.id]).trim() !== ''); else if (U.hit.kat) L = L.filter(b => (b.kat || 'Lainnya') === U.hit.kat);
+  L = L.filter(b => cariTeks(U.hit.q, b.nama + ' ' + b.kode + ' ' + b.kat)).sort((a, b) => a.nama.localeCompare(b.nama, 'id'));
+  box.innerHTML = L.length ? `<div class="daftar">${L.slice(0, 300).map(b => `<div class="opname" data-id="${b.id}"><div><div class="j">${esc(b.nama)}</div><div class="s">Di sistem ${angka(fisik(b))} ${esc(b.sat)}${b.belum ? ' (termasuk ' + angka(b.belum) + ' belum diambil)' : ''}</div></div><input class="in in-fisik" inputmode="decimal" placeholder="Fisik" value="${esc(H[b.id] == null ? '' : H[b.id])}" aria-label="Jumlah fisik ${esc(b.nama)}"><div class="selisih">${selisihTeks(b, H[b.id] == null ? '' : H[b.id])}</div></div>`).join('')}</div>` : '<div class="kosong"><b>Tidak ada barang</b></div>';
 }
-async function salinNota(n) {
-  const draf = LS.get('draft');
-  if (draf && draf.items && draf.items.length && !await tanya('Ganti nota yang belum disimpan?', 'Ada nota lain yang belum disimpan. Nota itu akan dibuang.', 'Buang dan salin', true)) return;
-  const d = draftKosong(); Object.assign(d, { nama: n.nama, hp: n.hp, alamat: n.alamat, ambil: n.ambil || 'Ambil di gudang', ongkir: n.ongkir, ket: n.ket, items: n.items.map(i => { const b = i.bid && BMAP[i.bid]; return { bid: b ? i.bid : null, kode: i.kode, nama: i.nama, sat: i.sat, qty: i.qty, harga: b ? +b.hj : i.harga }; }) });
-  bukaEditor(d);
-}
-function batalkanNota(n) {
-  const r = bukaSheet(`<div class="sh-head"><h3>Batalkan nota ${esc(n.no)}?</h3></div><div class="sh-body"><p>Stok barang dikembalikan dan nota tidak dihitung di laporan.${n.status === 'Selesai' ? ' <b>Barang sudah keluar dari gudang</b>, pastikan barang sudah dikembalikan pelanggan.' : ''}</p><label class="fld"><span>Alasan</span><input id="bt-alasan" placeholder="Mis. salah input, pembeli batal"></label></div><div class="sh-foot"><button class="btn" data-act="kembali">Jangan</button><button class="btn btn-bahaya" id="bt-ok">Batalkan nota</button></div>`);
-  $('#bt-ok', r.el).onclick = async () => { const alasan = $('#bt-alasan', r.el).value.trim(); if (!alasan) { toast('Tulis alasan pembatalan.'); return; } antre('batal', { notaId: n.id, alasan, oleh: CFG.nama }, n.id + '-batal'); const k = kenal()[n.id]; if (k) k.alasan = alasan; await kembali(); toast('Nota dibatalkan'); sinkron(); };
+PADA_INPUT['hit-q'] = t => { U.hit.q = t.value; isiHitung(); };
+document.addEventListener('input', e => {
+  const t = e.target; if (!t.classList || !t.classList.contains('in-fisik')) return; const row = t.closest('.opname'); const b = BMAP[row.dataset.id]; if (!b) return;
+  const H = hitungan(); if (t.value.trim() === '') delete H[b.id]; else H[b.id] = t.value.trim();
+  $('.selisih', row).innerHTML = selisihTeks(b, t.value); const n = Object.keys(H).length; setText('#hit-n', n); const tb = $('[data-act="hit-simpan"]'); if (tb) tb.disabled = !n; simpan();
+});
+async function simpanHitung() {
+  const H = hitungan(); const ids = Object.keys(H).filter(id => BMAP[id] && String(H[id]).trim() !== ''); if (!ids.length) return;
+  const beda = ids.map(id => ({ b: BMAP[id], d: bulat(parseQty(H[id]) - fisik(BMAP[id])) })).filter(x => x.d !== 0);
+  if (!await tanya('Simpan hitungan ' + ids.length + ' barang?', beda.length ? `${beda.length} barang berselisih:<br>${beda.slice(0, 8).map(x => esc(x.b.nama) + ': ' + (x.d > 0 ? '+' : '') + angka(x.d) + ' ' + esc(x.b.sat)).join('<br>')}${beda.length > 8 ? '<br>…' : ''}` : 'Semua barang cocok dengan catatan sistem.', 'Simpan')) return;
+  const d = new Date(); const id = uid();
+  antre('opname', { id, no: 'OP-' + hariIni().slice(2).replace(/-/g, '') + '-' + pad(d.getHours()) + pad(d.getMinutes()), tgl: hariIni(), petugas: CFG.nama, items: ids.map(i => ({ bid: i, fisik: parseQty(H[i]) })) }, id);
+  for (const i of ids) { const b = BMAP[i]; b.stok = bulat(parseQty(H[i]) - (b.belum || 0)); }
+  CACHE.hitung = {}; simpan(); toast('Hitungan tersimpan. Stok disesuaikan.'); render(); sinkron();
 }
 
 /* ---------- aksi ---------- */
 Object.assign(AKSI, {
-  'nota-baru': () => mulaiNota(),
-  'lanjut-draf': () => { const d = LS.get('draft'); if (d) bukaEditor(d); },
-  'buka-nota': el => bukaDetail(el.dataset.id),
-  'nl-per': el => { U.nota.per = el.dataset.v; render(); VIEWS.nota.masuk(); },
+  'ps-f': el => { U.ps.f = el.dataset.v; render(); },
+  'ps-segar': () => { toast('Memuat pesanan…'); ambilPesanan(); },
+  'ps-cek': el => { const c = centang(); const m = c[el.dataset.id] || (c[el.dataset.id] = {}); m[el.dataset.k] = !m[el.dataset.k]; el.classList.toggle('ok', !!m[el.dataset.k]); simpan(); },
+  'ps-status': el => { const n = cariNota(el.dataset.id); if (n) ubahStatus(n, el.dataset.s); },
+  'ps-selesai': async el => {
+    const n = cariNota(el.dataset.id); if (!n) return; const c = centang()[n.id] || {}; const belum = n.items.filter((_, k) => !c[k]).length;
+    if (!await tanya(n.ambil === 'Diantar' ? 'Barang sudah diantar?' : 'Barang sudah diserahkan?', `${esc(n.no)} untuk ${esc(n.nama || 'pembeli umum')}, ${n.items.length} jenis barang.${belum ? ` <b>${belum} barang belum dicentang.</b>` : ''}`, n.ambil === 'Diantar' ? 'Sudah diantar' : 'Sudah diserahkan')) return;
+    ubahStatus(n, 'Selesai'); toast(n.no + ' selesai');
+  },
+  'ps-cetak': el => { const n = cariNota(el.dataset.id); if (n) sheetCetak(n, 'sj'); },
   'st-kat': el => { U.stok.kat = el.dataset.v; render(); },
-  'lihat-barang': el => { const b = BMAP[el.dataset.id]; if (b) kartuStokSheet(b); },
-  'bayar-grup': el => { const L = grupBon(el.dataset.k); if (L.length) sheetBayar(L, 'Terima pembayaran dari ' + L[0].nama); },
-  'tagih': el => { const L = grupBon(el.dataset.k); if (!L.length) return; const tot = L.reduce((s, n) => s + n.sisa, 0); bukaWA(L[0].hp, `Yth. ${L[0].nama},\n\nBerikut rincian bon di ${DATA.toko.nama || 'toko kami'}:\n${L.map(n => `• ${n.no} (${tglPendek(n.tgl)}) sisa ${rp(n.sisa)}`).join('\n')}\n\n*Total: ${rp(tot)}*\n\nTerima kasih.`); },
-  'nt-cetak': el => { const n = cariNota(el.dataset.id); if (n) sheetCetak(n); },
-  'nt-gambar': el => { const n = cariNota(el.dataset.id); if (n) bagikanGambar(n); },
-  'nt-wa': el => { const n = cariNota(el.dataset.id); if (n) bukaWA(n.hp, teksNota(n)); },
-  'nt-lain': el => { const n = cariNota(el.dataset.id); if (n) menuNota(n); },
-  'nt-bayar': el => { const n = cariNota(el.dataset.id); if (n) sheetBayar([n], 'Terima pembayaran'); },
-  'ed-buang': async () => { if (!D) return; if ((D.items.length || D.nama) && !await tanya('Buang nota ini?', 'Isi nota yang belum disimpan akan hilang.', 'Buang', true)) return; hapusDraft(); D = null; const r = atas(); if (r) r.onClose = null; await kembali(); },
-  'ed-pilih': el => { const b = BMAP[el.dataset.id]; if (b) { tambahBaris({ bid: b.id, kode: b.kode, nama: b.nama, sat: b.sat, qty: 1, harga: +b.hj || 0 }); bersihCari(); } },
-  'ed-bebas': () => { const q = $('#ed-cari').value.trim(); const i = tambahBaris({ bid: null, nama: q || 'Lain-lain', sat: '', qty: 1, harga: 0 }); bersihCari(); setTimeout(() => { const e = $(`#ed-baris .baris[data-i="${i}"] .in-harga`); if (e) { e.focus(); e.select(); } }, 60); },
-  'ed-pindai': () => pindai(kode => { const b = DATA.barang.find(x => x.kode && x.kode.toLowerCase() === kode.toLowerCase()); if (b) { tambahBaris({ bid: b.id, kode: b.kode, nama: b.nama, sat: b.sat, qty: 1, harga: +b.hj || 0 }); toast(b.nama + ' ditambahkan'); } else toast('Kode ' + kode + ' belum ada di daftar barang.'); }),
-  'ed-qty': el => { const b = el.closest('.baris'); const it = D && D.items[+b.dataset.i]; if (!it) return; const v = bulat((+it.qty || 0) + (+el.dataset.d)); if (v <= 0) return; it.qty = v; $('.in-qty', b).value = angka(v); setText('.b-jml', ribu(Math.round(it.qty * it.harga)), b); perbaruiInfo(); perbaruiTotal(); ubahDraft(); },
-  'ed-hapus': el => { const b = el.closest('.baris'); if (!D) return; D.items.splice(+b.dataset.i, 1); renderBaris(); ubahDraft(); },
-  'ed-metode': el => { if (!D) return; D.metode = el.dataset.m; if (D.metode !== 'Bon') D.bayar = 0; renderBayar(); ubahDraft(); },
-  'ed-ambil': el => { if (!D) return; D.ambil = el.dataset.v; renderAmbil(); ubahDraft(); },
-  'ed-uang': el => { if (!D) return; D.terima = +el.dataset.v; D.terimaDiisi = true; const i = $('#ed-terima'); if (i) i.value = ribu(D.terima); perbaruiTotal(); ubahDraft(); },
-  'ed-simpan': () => simpanNota()
+  'barang-baru': el => bukaBarang(null, { nama: el.dataset.nama || '' }),
+  'buka-barang': el => bukaBarang(el.dataset.id),
+  'masuk-baru': () => mulaiMasuk(),
+  'buka-masuk': el => bukaDetailMasuk(el.dataset.id),
+  'hit-kat': el => { U.hit.kat = el.dataset.v; render(); },
+  'hit-kosong': async () => { if (await tanya('Kosongkan semua isian hitungan?', '', 'Kosongkan', true)) { CACHE.hitung = {}; simpan(); render(); } },
+  'hit-simpan': () => simpanHitung(),
+  'm-buang': async () => { if (!M) return; if (M.items.length && !await tanya('Buang penerimaan ini?', 'Isian yang belum disimpan akan hilang.', 'Buang', true)) return; LS.del('draftMasuk'); M = null; const r = atas(); if (r) r.onClose = null; await kembali(); },
+  'm-pilih': el => { const b = BMAP[el.dataset.id]; if (b && M) mTambah(b); },
+  'm-baru': () => { const q = $('#m-cari').value.trim(); bukaBarang(null, { nama: q, lalu: b => { if (M && b) mTambah(b); } }); },
+  'm-pindai': () => pindai(kode => { const b = DATA.barang.find(x => x.kode && x.kode.toLowerCase() === kode.toLowerCase()); if (b) { mTambah(b); toast(b.nama + ' ditambahkan'); } else bukaBarang(null, { kode, lalu: x => { if (M && x) mTambah(x); } }); }),
+  'm-qty': el => { const b = el.closest('.baris'); const it = M && M.items[+b.dataset.i]; if (!it) return; const v = bulat((+it.qty || 0) + (+el.dataset.d)); if (v <= 0) return; it.qty = v; $('.in-qty', b).value = angka(v); setText('.b-jml', ribu(Math.round(it.qty * it.harga)), b); $('.b-info', b).innerHTML = infoM(it); mTotal(); simpanDrafM(); },
+  'm-hapus': el => { const b = el.closest('.baris'); if (!M) return; M.items.splice(+b.dataset.i, 1); mBaris(); simpanDrafM(); },
+  'm-metode': el => { if (!M) return; M.metode = el.dataset.m; if (M.metode !== 'Tempo') M.bayar = 0; mBayar(); simpanDrafM(); },
+  'm-hapus-foto': el => { if (!M) return; M.foto.splice(+el.dataset.i, 1); mFoto(); },
+  'm-simpan': () => simpanMasuk()
 });
+const renderAsli = render;
+render = function () { renderAsli(); perbaruiLencana(); };
 
-mulaiInti('beranda');
+mulaiInti('pesanan');
 
 </script>
 </body>

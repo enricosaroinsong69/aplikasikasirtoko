@@ -1,7 +1,7 @@
 {
-  "name": "Kasir Toko Bangunan",
-  "short_name": "Kasir Toko",
-  "description": "Nota jual, pembayaran bon, dan stok toko bangunan. Tersambung ke aplikasi Gudang dan laporan di Google Spreadsheet.",
+  "name": "Gudang Toko Bangunan",
+  "short_name": "Gudang Toko",
+  "description": "Pesanan dari kasir, barang masuk dari supplier, stok, dan hitung stok toko bangunan. Tersambung ke aplikasi Kasir dan laporan di Google Spreadsheet.",
   "lang": "id",
   "start_url": "./",
   "scope": "./",
@@ -12,7 +12,7 @@
     "minimal-ui"
   ],
   "background_color": "#E7E8E3",
-  "theme_color": "#F2B300",
+  "theme_color": "#24445E",
   "categories": [
     "business",
     "productivity"
